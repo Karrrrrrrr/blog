@@ -1,6 +1,5 @@
 ---
 title: Consul注册微服务的一些方案 
-// cover: https://images3.alphacoders.com/227/thumbbig-227925.webp
 cover: https://images2.alphacoders.com/227/thumbbig-227910.webp
 
 --- 
@@ -23,8 +22,14 @@ Docker的DNS一般是127.0.0.11，所以配上就不存在上面的问题
 # /etc/kong/kong.conf
 dns_resolver=115.29.227.177:8600,127.0.0.11,8.8.8.8
 ```
-方案四是最推荐的，只是配置Kong比较麻烦
+
+[comment]: <> (方案四是最推荐的，只是配置Kong比较麻烦)
+
+方案五， Traefik + Docker 天然的服务发现 
+
+方案六， Consul + Traefik  
+在traefik里面配置consul catelog， traefik能自动读取consul的注册节点从而反代。
 
 
-
+推荐方案六， 相对而言最简单
 
