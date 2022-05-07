@@ -1,4 +1,5 @@
-baseURL = 'https://hugo.single-one.top/'
+baseURL = '/'
+#baseURL = './'
 languageCode = 'zh-cn'
 title = 'Karrrrrr'
 theme = 'kagome'
