@@ -9,7 +9,7 @@ steps:
     pull: if-not-exists # 跳过重复下载
     volumes:
       - name: html
-        path: /data:rw
+        path: /data
 #    environment:
 #      GOPROXY: https://goproxy.cn
 #      CGO_ENABLED: 0
