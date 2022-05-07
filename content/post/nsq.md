@@ -2,7 +2,7 @@
 title: NSQ 消息队列
 cover: https://pic4.zhimg.com/80/c380ba809ac2a91f827893f3cc251f7f_720w.jpg
 ---
-
+ 
 Docker部署方式:
 ```yaml
 version: "3.7"
