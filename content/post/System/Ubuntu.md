@@ -1,6 +1,8 @@
 ---
 title: ubuntu-apt 
-cover: https://tse1-mm.cn.bing.net/th/id/OIP-C.GPvt_mGMldIyuljcRHEd5gHaEK?pid=ImgDet&rs=1
+//cover: https://tse1-mm.cn.bing.net/th/id/OIP-C.GPvt_mGMldIyuljcRHEd5gHaEK?pid=ImgDet&rs=1
+cover: https://pic2.zhimg.com/80/v2-616c40f573429e5dafe5b50ac4753329_720w.jpg
+
 ---
 
 把以下代码写入/etc/apt/sources.list

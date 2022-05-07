@@ -1,6 +1,6 @@
 ---
 title: RabbitMQ
-cover: https://i1.wp.com/www.drouiz.com/wp-content/uploads/2018/09/rabbitmq_logo.png?ssl=1
+cover: https://pic4.zhimg.com/80/c3edefc8bdd82043a247b2c05a706527_720w.jpg
 ---
 
 消息队列的第二选择
