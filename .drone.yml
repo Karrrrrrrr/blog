@@ -15,8 +15,6 @@ steps:
 #      CGO_ENABLED: 0
 
     commands:
-#      - cat ./config.toml
-      - sleep 10000000000
       - hugo
       - rm -rf /data/html
       - mv ./public /data/html
