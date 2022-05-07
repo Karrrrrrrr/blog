@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  hugo:
+    image: nginx:alpine
+    volumes:
+      - /docker/hugo/data/html:/usr/share/nginx/html:rw
+    container_name: hugo
+    working_dir: /hugo
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.hugo.entryPoints=websecure"
+      - "traefik.http.routers.hugo.rule=(Host(`hugo.single-one.top`))"
+      - "traefik.http.services.hugo.loadBalancer.server.port=80"
+networks:
+  proxy:
+    external: true

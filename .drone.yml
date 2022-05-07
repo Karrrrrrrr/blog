@@ -1,0 +1,30 @@
+#---
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: backend
+    image: 438577872/hugo
+    pull: if-not-exists # 跳过重复下载
+    volumes:
+      - name: html
+        path: /data:rw
+#    environment:
+#      GOPROXY: https://goproxy.cn
+#      CGO_ENABLED: 0
+
+    commands:
+#      - cat ./config.toml
+      - sleep 10000000000
+      - hugo
+      - rm -rf /data/html
+      - mv ./public /data/html
+#      - rm -rf /data/html
+#      - mkdir /data/html
+#      - cp -rf ./public/* /data/html
+
+volumes:
+  - name: html
+    host:
+      path: /docker/hugo/data

@@ -1,0 +1,4 @@
+baseURL = 'https://hugo.single-one.top/'
+languageCode = 'zh-cn'
+title = 'Karrrrrr'
+theme = 'kagome'
