@@ -1,5 +1,6 @@
 ---
 title: ubuntu-apt 
+cover: https://tse1-mm.cn.bing.net/th/id/OIP-C.GPvt_mGMldIyuljcRHEd5gHaEK?pid=ImgDet&rs=1
 ---
 
 把以下代码写入/etc/apt/sources.list

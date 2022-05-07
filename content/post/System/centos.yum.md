@@ -1,5 +1,6 @@
 ---
 title: Centos8-yum
+cover: https://tse3-mm.cn.bing.net/th/id/OIP-C.dSLbppF9DYqjsw4BPXF_lgHaCF?pid=ImgDet&rs=1
 ---
 2021年 Centos8不受支持 以至于yum无法正常工作 
 但是rocky8是兼容centos8的
