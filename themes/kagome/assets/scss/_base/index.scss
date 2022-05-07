@@ -5,75 +5,91 @@
 
 
 body {
-  background-color: var(--theme-bg-primary);
-  transition: transitions(background-color, 0.3s);
+  background-color : var(--theme-bg-primary);
+  transition       : transitions(background-color, 0.3s);
 }
 
 .text-ellipsis {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow      : hidden;
+  text-overflow : ellipsis;
+  white-space   : nowrap;
 }
 
 .center-bg {
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  background-repeat   : no-repeat;
+  background-position : center;
+  background-size     : cover;
 }
 
 .layout-padding {
-  padding: var(--layout-padding-x);
+  padding : var(--layout-padding-x);
 }
 
 .layout-margin {
-  margin: var(--layout-padding-x);
+  margin : var(--layout-padding-x);
 }
 
 .layout-block {
-  width: 100%;
-  max-width: var(--layout-max-width);
-  margin-left: auto;
-  margin-right: auto;
+  width        : 100%;
+  max-width    : var(--layout-max-width);
+  margin-left  : auto;
+  margin-right : auto;
 }
 
 .content-padding-large {
-  padding: var(--content-large-padding);
+  padding : var(--content-large-padding);
 }
 
 .content-padding-primary {
-  padding: var(--content-primary-padding);
+  padding : var(--content-primary-padding);
 }
 
 [class*=soft-size--] {
   &.soft-size--large {
-    --radius: var(--soft-large-radius);
+    --radius : var(--soft-large-radius);
   }
 
   &.soft-size--primary {
-    --radius: var(--soft-primary-radius);
+    --radius : var(--soft-primary-radius);
   }
 
   &.soft-size--small {
-    --radius: var(--soft-small-radius);
+    --radius : var(--soft-small-radius);
   }
 
   &.soft-size--round {
-    --radius: 50%;
+    --radius : 50%;
   }
 }
 
 [class*=soft-style--] {
-  transition: transitions((border-radius, box-shadow, background-image));
+  transition : transitions((border-radius, box-shadow, background-image));
 
   &.soft-style--box {
+    $length    : 2px;
+    transition : all 300ms !important;
     @include soft-box(var(--radius));
+    box-shadow : $length $length $length $length rgba(100, 100, 100, 0.1);
   }
-  
+
+  &.soft-style--box:hover {
+    //box-shadow : 2px 2px 1px 1px rgba(0, 0, 0, 0.3);
+    $length    : 4px;
+    box-shadow : ($length - 1px)  $length $length $length rgba(100, 100, 100, 0.2);
+
+  }
+
   &.soft-style--hover:hover {
     @include soft-box(var(--radius));
   }
 
+
   &.soft-style--active:active {
     @include soft-box--active(var(--radius));
   }
+}
+
+.article-item .soft-style--box:hover {
+  transition : all 300ms;
+  transform  : translateY(-20px);
 }
