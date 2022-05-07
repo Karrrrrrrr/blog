@@ -18,9 +18,6 @@ steps:
       - hugo
       - rm -rf /data/html
       - mv ./public /data/html
-#      - rm -rf /data/html
-#      - mkdir /data/html
-#      - cp -rf ./public/* /data/html
 
 volumes:
   - name: html
