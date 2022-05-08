@@ -22,19 +22,18 @@ from generate_series(1, 100);
 
 ```postgresql
 select row_to_json(out1) as response
-from (select (select jsonb_agg(s)
-              from (select *
-                    from scores,
-                         students as s1
-                    where s1.class_id = s2.class_id) as s) as items
-              ,
-             avg(val),
-             class_id
-
+from (
+  select (
+    select jsonb_agg(s)
+    from (select * from scores,
+                        students as s1
+    where s1.class_id = s2.class_id) as s) as items,
+         avg(val),
+         class_id
       from scores,
            students as s2
-      where student_id = s2.id
-      group by class_id) as out1;
+  where student_id = s2.id
+  group by class_id) as out1;
 
 ```
 
@@ -42,54 +41,58 @@ from (select (select jsonb_agg(s)
 
 ```postgresql
 
-select jsonb_agg(r.response)
-from (
-         select row_to_json(out1) as response
-         from (select (select jsonb_agg(s)
-                       from (select *
-                             from scores,
-                                  students as s1
-                             where s1.class_id = s2.class_id) as s) as items
-                       ,
-                      avg(val),
-                      class_id
-
-               from scores,
-                    students as s2
-               where student_id = s2.id
-               group by class_id) as out1
-     ) r;
+select jsonb_agg(r.response) from (
+  select row_to_json(out1) as response
+  from (
+    select (
+      select jsonb_agg(s)
+      from (
+        select * from scores,
+                      students as s1
+        where s1.class_id = s2.class_id) as s) as items,
+           avg(val),
+           class_id
+    from scores,
+         students as s2
+    where student_id = s2.id
+    group by class_id) as out1) r;
 
 
 -- 方式二 稍微简化了
 select array_to_json(array_agg(r))
 from (
-         select (
-                    select array_agg(s)
-                    from (select s1.*
-                          from scores,
-                               students as s1
-                          where s1.class_id = s2.class_id) as s) as items,
-                avg(val),
-                class_id
-         from scores,
-              students as s2
-         where student_id = s2.id
-         group by class_id) r;
+  select (
+    select array_agg(s)
+    from (select s1.*
+    from scores,
+         students as s1
+    where s1.class_id = s2.class_id) as s) as items,
+         avg(val),
+         class_id
+  from scores,
+       students as s2
+  where student_id = s2.id
+group by class_id) r;
 ```
 
 查询每个班级的课程平均分，考试人数， 以及所有考生的数据
 
 ```postgresql
 select (
-           select row_to_json(row)
-           from (select count(row), jsonb_agg(row) as items
-                 from (select row_to_json(row)
-                       from (select *
-                             from students,
-                                  scores
-                             where students.class_id = cls.id
-                               and students.id = scores.student_id) as row) as row) as row) as data
+  select row_to_json(row)
+  from (
+    select count(row), jsonb_agg(row) as items
+    from (
+      select row_to_json(row)
+      from (
+        select * from students,
+                      scores
+        where students.class_id = cls.id
+          and students.id = scores.student_id)
+        as row)
+      as row)
+    as row)
+  as data
 from clazz as cls;
 ```
 
@@ -97,35 +100,39 @@ from clazz as cls;
 
 ```postgresql
 
-select *
-from (select (
-                 select row_to_json(r)
-                 from (with temp_data as (
-                     select count(rows), avg(rows.val), sum(rows.val), jsonb_agg(rows) as items
-                     from (select student_id, scores.id, val, student_id
-                           from students,
-                                scores
-                           where students.class_id = clazz.id
-                             and students.id = scores.student_id) as rows
-                 )
-                       select *, clazz.id as class_id
-                       from temp_data) r
-             ) as row
-      from clazz) r;
+select * from (
+  select (
+    select row_to_json(r)
+    from (
+      with temp_data as (
+        select count(rows),
+               avg(rows.val),
+               sum(rows.val),
+               jsonb_agg(rows) as items from (
+          select student_id, scores.id, val, student_id
+          from students,
+               scores 
+          where students.class_id = clazz.id
+            and students.id = scores.student_id) as rows)
+      select *, clazz.id as class_id
+      from temp_data) r ) 
+    as row
+  from clazz) r;
 ```
 ```postgresql
 
 select (
-           with recursive student_list as (select * from students where cls.id = students.class_id),
---                 let student_list = [...]  // 因为需要用来count， 所以先用一个临时表存数据，防止多次查询导致缓慢
-                          response as
-                              (select (json_agg(student_list))            as items,
-                                      (select count(*) from student_list) as cnt
-                               from student_list)
+  with recursive student_list as (
+--   let student_list = [...]  // 因为需要用来count， 所以先用一个临时表存数据，防止多次查询导致缓慢
+    select * from students where cls.id = students.class_id),
+    response as (
+      select (json_agg(student_list))            as items,
+             (select count(*) from student_list) as cnt 
+      from student_list)
 --                 let response = {items: student_list, cnt: len(student_list)} // 组装成一个对象 返回
 --                 export response
-           select row_to_json(response)  -- 转json返回
-           from response
+        select row_to_json(response)  -- 转json返回
+        from response
        ) as items
 from classes as cls; -- 返回客户端
 
@@ -212,11 +219,12 @@ create
     or replace function query(_id int) returns json as
 $$
 begin
-    return (select jsonb_agg(r)
-            from (
-                     SELECT *, query(e.employee_id) as children
-                     FROM employees e
-                     where e.manager_id = _id) as r);
+  return (
+    select jsonb_agg(r)
+        from (
+          SELECT *, query(e.employee_id) as children
+          FROM employees e
+          where e.manager_id = _id) as r);
 
 end
 $$
