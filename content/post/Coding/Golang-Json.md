@@ -12,12 +12,57 @@ date: 2022-05-08T18:56:46+08:00
 
 为了避免这种问题， 最好在传给前端的时候 转化为string
 
+
+
 ```go
-type User struct {
-	Id int `json:"Id,string"`
+// 将[]int 序列化为[]string
+// 这里就需要用到自定义序列化，也就是实现json/encode 里面的MarshalJson和UnmarshalJson方法。
+
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"strconv"
+	"strings"
+)
+ 
+
+type IntString int64
+
+type RequestParam struct {
+	LoadWaybills []IntString `json:"load_waybills"`
 }
+
+func (i IntString) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("\"%v\"", i)), nil
+}
+
+func (i *IntString) UnmarshalJSON(value []byte) error {
+	m, err := strconv.ParseInt(string(value[1:len(value)-1]), 10, 32)
+	if err != nil {
+		return err
+	}
+	*i = IntString(m)
+	return nil
+}
+
+// 以下同理
+//type StringInt string
+//
+//func (i StringInt) MarshalJSON() ([]byte, error) {
+//  val, err := strconv.Atoi(string(i))
+//  
+//  return []byte(fmt.Sprintf("\"%v\"", i)), nil
+//}
+//
+//func (i *StringInt) UnmarshalJSON(value []byte) error {
+//  m, err := strconv.ParseInt(string(value[1:len(value)-1]), 10, 32)
+//  if err != nil {
+//    return err
+//  }
+//  *i = IntString(m)
+//  return nil
+//}
+
 ```
-如上面那样 就能在序列化的时候自动改为字符串
-
-当然也可以手动创建一个VO类， 会比较麻烦
-
