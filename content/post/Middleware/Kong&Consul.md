@@ -135,10 +135,10 @@ func main() {
 
 ### 一些细节部分， consul 的dns 解析是udp的 如果端口映射tcp会不起作用
 ### 启动kong和konga之前必须先初始化数据库（PG）
-### kong的初始化是 kong migrations botostrap
+### kong的初始化是 kong migrations bootstrap
 ### konga 可以不使用数据库直接启动
 
-```
+```postgresql  
 --
 -- PostgreSQL database dump
 --
