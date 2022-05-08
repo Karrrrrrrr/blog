@@ -1,7 +1,7 @@
 ---
 title: GolangJSON序列化技巧
 cover: https://tse3-mm.cn.bing.net/th/id/OIP-C.6WNXKZEe6OrhwI2x-JzRqQHaDt?pid=ImgDet&rs=1
-time: 2022-5-8
+date: 2022-5-8
 ---
 
 ### GolangJSON序列化技巧
