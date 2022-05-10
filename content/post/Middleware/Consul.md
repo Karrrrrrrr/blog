@@ -1,6 +1,5 @@
 ---
 title: consul的使用
-cover: https://cloud.miiiku.xyz/src/images/cover/cover-15.jpg?x-oss-process=style/webp
 --- 
 ### consul 是微服务注册中心
 #### 这里结合gin 记录一下使用案例
@@ -9,7 +8,6 @@ cover: https://cloud.miiiku.xyz/src/images/cover/cover-15.jpg?x-oss-process=styl
 ##### 这里存在go-micro版本问题 所以注意下载的版本是v3
 
 ```go
-
 package main
 
 import (
@@ -64,7 +62,8 @@ func main() {
 docker run -itd -p 8500:8500 --name consul  consul   
 ```
 
-```gomod 
+
+```gomod
 
 module consul2
 
@@ -158,4 +157,57 @@ require (
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
+```
+
+
+该功能的Python简单实现
+```python
+import time
+
+import requests
+import threading
+from flask import Flask
+
+app = Flask("")
+
+
+@app.route("/")
+def index():
+    return {
+        'msg': 'lscb'
+    }
+
+
+def heart():
+    payload = {
+        'ID': '3c05bc09-21f3-4d17-b65a-334a899b59e2',
+        'Name': 'micro2',
+        'Tags': [
+            'traefik.enable=true',
+            'traefik.http.routers.micro2.rule=Host(`py.localhost`)',
+        ],
+        'Port': 8001, 'Address': '172.22.0.1',
+        'Check': {
+            'TTL': '1m0s',
+            'DeregisterCriticalServiceAfter': '1m5s'
+        },
+        'Checks': None}
+
+    resp = requests.put('http://127.0.0.1:8500/v1/agent/service/register', json=payload)
+    while 1:
+        requests.put('http://127.0.0.1:8500/v1/agent/check/pass/service:3c05bc09-21f3-4d17-b65a-334a899b59e2?note=')
+
+        time.sleep(60)
+
+
+def run():
+    threading.Thread(target=heart).start()
+    app.run(
+        port=8001,
+        host='0.0.0.0'
+    )
+
+
+run()
+
 ```
