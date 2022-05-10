@@ -1,6 +1,6 @@
 ---
 title: "Traefik"
-date: 2022-05-10T20:00:39+08:00 draft: true
+date: 2022-05-10T20:00:39+08:00 
 cover: https://doc.traefik.io/traefik/assets/img/traefik-architecture.png
 ---
 
