@@ -28,7 +28,7 @@
   
   {{ $title := .Site.Title }}
   {{ with .Params.Title }}
-  {{ $title = printf "%s  %s" . $title }}
+  {{ $title = printf "%s --- %s" . $title }}
   {{ end }}
   <title>{{- $title -}}</title>
 
