@@ -1,7 +1,6 @@
 ---
 title: "Barrage Vue"
 date: 2022-05-15T23:13:05+08:00
-draft: true
 ---
 
 ### 关于Vue播放器弹幕的实现
