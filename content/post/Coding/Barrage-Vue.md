@@ -71,7 +71,8 @@ date: 2022-05-15T23:13:05+08:00
     <barrage-video />
 </div >
 </body >
-<script src="./vue.global.prod.js" ></script >
+<script src="https://lib.baomitu.com/vue/3.0.2/vue.global.js"></script>
+
 <script >
     const {createApp, ref} = Vue
 
