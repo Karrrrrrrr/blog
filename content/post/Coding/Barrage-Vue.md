@@ -54,7 +54,6 @@ date: 2022-05-15T23:13:05+08:00
             font-size   : 30px;
             font-family : "DejaVu Math TeX Gyre";
             user-select : none;
-
         }
 
         @keyframes barrage {
@@ -69,25 +68,14 @@ date: 2022-05-15T23:13:05+08:00
 </head >
 <body >
 <div id="app" >
-    <div id="container" >
-        <video src="http://172.22.0.3/video.mp4" ref="video" autoplay ></video >
-        <div id="barrage-box" @dblclick="fullScreen" @click="videoClick" >
-            <div @mouseenter="onMouseEnter" @mouseleave="onMouseLeave" v-text="item.text"
-                 v-for="item in barrageList" :style="{marginTop: item.top}" :class="item.className"
-                 :key="item.id" ></div >
-        </div >
-    </div >
-    <button @click="play" >PLAY</button >
-    <button @click="pause" >PAUSE</button >
-    <button @click="fullScreen" >FullScreen</button >
-    <button @click="sendBarrage" >SEND</button >
-
+    <barrage-video />
 </div >
 </body >
 <script src="./vue.global.prod.js" ></script >
-
 <script >
     const {createApp, ref} = Vue
+
+
     const useVideo = () => {
         const video = ref(null)
         const barrageList = ref([])
@@ -152,17 +140,39 @@ date: 2022-05-15T23:13:05+08:00
             onMouseEnter,
             onMouseLeave
         }
-
     }
-    const app = createApp({
+    const Video = {
+        template: `
+          <div id="container" >
+          <video src="http://172.22.0.3/video.mp4" ref="video" autoplay ></video >
+          <div id="barrage-box" @dblclick="fullScreen" @click="videoClick" >
+            <div @mouseenter="onMouseEnter"
+                 @mouseleave="onMouseLeave"
+                 v-text="item.text"
+                 v-for="item in barrageList"
+                 :style="{marginTop: item.top}"
+                 :class="item.className"
+                 :key="item.id" />
+          </div >
+          </div >
+          <button @click="play" >PLAY</button >
+          <button @click="pause" >PAUSE</button >
+          <button @click="fullScreen" >FullScreen</button >
+          <button @click="sendBarrage" >SEND</button >`,
         setup() {
             const video = useVideo()
 
             return {
                 ...video,
             }
+
         }
-    }).mount('#app')
+    }
+
+    const app = createApp({})
+    app.component('BarrageVideo', Video)
+    app.mount('#app')
+
 </script >
 </html >
 ```
