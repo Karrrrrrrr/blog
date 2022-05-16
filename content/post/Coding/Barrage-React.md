@@ -1,6 +1,7 @@
 ---
 title: "Barrage React"
 date: 2022-05-16T00:52:09+08:00 
+cover: https://pic4.zhimg.com/80/c3edefc8bdd82043a247b2c05a706527_720w.jpg
 ---
 ### 关于 React 播放器弹幕的实现
 

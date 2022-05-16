@@ -1,6 +1,7 @@
 ---
 title: "Jetbrains App && Latte-Dock"
 date: 2022-05-17T02:24:21+08:00
+cover: https://pic2.zhimg.com/80/v2-5163a11deb63b9884a67042455714a89_720w.jpg
 ---
 
 关于自定义应用在Latte-Dock中显示不正确的问题

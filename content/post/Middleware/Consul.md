@@ -1,5 +1,6 @@
 ---
 title: consul的使用
+cover: https://pic3.zhimg.com/80/v2-b676a9e59b4a277bfb4459b90e945fd2_720w.jpg
 --- 
 ### consul 是微服务注册中心
 #### 这里结合gin 记录一下使用案例
