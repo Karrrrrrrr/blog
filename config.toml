@@ -1,14 +1,7 @@
-#baseURL = '/'
-##baseURL = './'
-#languageCode = 'zh-cn'
-#title = 'Karrrrrr'
-#theme = 'meme'
-##theme = 'kagome'
-
 ##########################################
 # 站点配置
 
-baseURL = "/"
+baseURL = "https://example.com/"
 title = "Karrrrr"
 languageCode = "zh-CN"
 hasCJKLanguage = true
@@ -53,6 +46,7 @@ uglyURLs = false
 
 # URL 结构
 [permalinks]
+posts = "/posts/:slug/"
 categories = "/categories/:slug/"
 tags = "/tags/:slug/"
 
@@ -103,17 +97,17 @@ keepWhitespace = false
 # 作者信息
 [author]
 # 名字
-name = "reuixiy"
+name = "Karrrrr"
 # 邮箱
-email = "reuixiy@gmail.com"
+email = "438577872@qq.com"
 # 座右铭或简介
-motto = "Viva La Vida"
+motto = "只是喜欢写代码 :) "
 # 头像
 avatar = "/icons/apple-touch-icon.png"
 # 网站（默认值：baseURL）
-website = "https://io-oi.me/"
+#website = "https://io-oi.me/"
 # 推特
-twitter = "reuixiy"
+#twitter = "reuixiy"
 
 # 相关文章
 [related]
@@ -195,40 +189,60 @@ limit = -1
 #               `lang-switcher`、`search`）
 
 [menu]
-## 菜单栏
-# [[menu.main]]
-#     pageref = "/"
-#     name = "首页"
-#     weight = 1
-#     pre = "internal"
-#     post = "home"
+# 菜单栏
+[[menu.main]]
+pageref = "/home"
+name = "首页"
+weight = 1
+pre = "internal"
+post = "home"
+
+[[menu.main]]
+pageref = "/live"
+name = "生活"
+weight = 2
+pre = "internal"
+post = "live"
+
 [[menu.main]]
 pageref = "/posts/"
 name = "文章"
 weight = 2
 pre = "internal"
-post = "archive"
+post = "posts"
+
+[[menu.main]]
+pageref = "/posts/"
+name = "文章"
+weight = 2
+pre = "internal"
+post = "posts"
+
 [[menu.main]]
 pageref = "/categories/"
 name = "分类"
 weight = 3
 pre = "internal"
 post = "th"
+
 [[menu.main]]
 pageref = "/tags/"
 name = "标签"
 weight = 4
 pre = "internal"
 post = "tags"
-[[menu.main]]
-pageref = "/about/"
-name = "关于"
-weight = 5
-pre = "internal"
-post = "user-circle"
+
+#[[menu.main]]
+#pageref = "/about/"
+#name = "关于"
+#weight = 5
+#pre = "internal"
+#post = "about"
+
 [[menu.main]]
 weight = 6
 identifier = "theme-switcher"
+
 [[menu.main]]
 weight = 7
 identifier = "lang-switcher"
@@ -236,7 +250,12 @@ identifier = "lang-switcher"
 #     weight = 8
 #     identifier = "search"
 #     post = "search"
-
+[[menu.main]]
+url = "/archives/"
+name = "归档"
+weight = 5
+pre = "internal"
+post = "archive"
 
 
 ##########################################
@@ -350,11 +369,11 @@ siteDescription = "MemE 是一个强大且可高度定制的 GoHugo 博客主题
 #      Open Graph、Atom、RSS
 
 # 站点的创建时间
-siteCreatedTime = "1969-07-20T20:17:43+00:00"
+siteCreatedTime = "2022-01-20T20:17:43+00:00"
 # 注意：请保持此格式，更改数字
 
 # 站点的推特帐号
-siteTwitter = "reuixiy"
+#siteTwitter = "reuixiy"
 # 说明：用于 Twitter Cards
 
 
@@ -955,7 +974,8 @@ fontFamilyFooter = ""
 fontFamilyBody = "'EB Garamond', 'Noto Serif SC', serif"
 
 # 网络字体链接
-fontsLink = "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Noto+Serif+SC:wght@400;500;700&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+fontsLink = "/font.css"
+#    fontsLink = "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,700;1,400;1,700&family=Noto+Serif+SC:wght@400;500;700&family=Source+Code+Pro:ital,wght@0,400;0,700;1,400;1,700&display=swap"
 # 说明：要想读者一定体验到你设置的字体，最好
 #      采用网络字体。MemE 主题目前仅支持
 #      Google Fonts 的链接，请前往
@@ -1129,16 +1149,16 @@ displayPostShare = true
 
 displayShareOnText = false
 
-shareOnTwitter = true
-shareOnFacebook = true
-shareOnLinkedIn = true
-shareOnTelegram = true
-shareOnWeibo = true
-shareOnDouban = true
-shareOnQQ = true
-shareOnQzone = true
+shareOnTwitter = false
+shareOnFacebook = false
+shareOnLinkedIn = false
+shareOnTelegram = false
+shareOnWeibo = false
+shareOnDouban = false
+shareOnQQ = false
+shareOnQzone = false
 
-shareViaQRCode = true
+shareViaQRCode = false
 
 
 ######################################
