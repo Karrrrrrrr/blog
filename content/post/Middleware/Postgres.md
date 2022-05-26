@@ -1,5 +1,7 @@
 ---
-title: Postgres 高阶用法 cover: https://pic4.zhimg.com/80/v2-af80b26c6bd5a71eba219eb1e10b579b_720w.jpg
+title: Postgres 高阶用法
+
+cover: https://pic4.zhimg.com/80/v2-af80b26c6bd5a71eba219eb1e10b579b_720w.jpg
 ---
 
 # Postgres 高阶用法
