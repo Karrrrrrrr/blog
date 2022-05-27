@@ -4,11 +4,12 @@ date: 2022-05-20T00:53:09+08:00
 
 cover: https://pic4.zhimg.com/80/v2-97af21b844d39fdf35a0d5115e2f7cd7_720w.jpg
 categories: ["代码", "数据库","插件"]
-tags: [ "数据库","插件"]
+tags: [ "数据库","插件", "中文分词" ,"搜索引擎" ]
 ---
 
 zhparser是Postgres的一个插件
 可以用来分词,从而进行搜索
+详情参照[文档](http://www.postgres.cn/docs/14/textsearch-controls.html#TEXTSEARCH-PARSING-DOCUMENTS) 
 
 ```yaml
 # docker-compose.yml
@@ -36,10 +37,10 @@ ALTER TEXT SEARCH CONFIGURATION chinese_zh ADD MAPPING FOR n,v,a,i,e,l WITH simp
 
 
 测试插件是否安装成功SQL：
-```sql
+```postgresql
 select ts_debug('chinese_zh', '白垩纪是地球上海陆分布和生物界急剧变化、火山活动频繁的时代');
 ```
-```sql
+```postgresql
 CREATE TEXT SEARCH CONFIGURATION chinese_parser (PARSER = zhparser);
 ALTER TEXT SEARCH CONFIGURATION chinese_parser ADD MAPPING FOR n,v,a,i,e,l,j WITH simple;
 
@@ -71,6 +72,21 @@ UPDATE books SET book_name_index = to_tsvector('chinese_zh', coalesce(book_name,
 
 CREATE INDEX idx_gin ON books USING GIN (book_name_index);
 select * from books where book_name_index @@ to_tsquery('chinese_zh','程序员操作系统');
+select * from books where book_name_index @@ plainto_tsquery('chinese_zh','程序员操作系统');
+
+-- 排序 高亮结果 但是结果返回会比较慢  所以最好limit个数
+select id,
+       title,
+       ts_rank_cd(information.abstract_index, query) as rank,
+       ts_headline('chinese_zh',
+                   information.abstract,
+                   query, 'HighlightAll = true') as abstract
+from information,
+     plainto_tsquery('chinese_zh', '师范') as query
+where
+	information.abstract_index @@ query 
+order by rank desc;
+
 --  tsquery里面不能有空格  
 ```
 
