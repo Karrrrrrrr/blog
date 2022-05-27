@@ -429,7 +429,7 @@ params:
   autoHideLangToggle: true
   enableHighlight: true
   enableOverflowY: true
-  maxHeight: 20
+  maxHeight: 50
   enableCopy: true
   enableCopyAutoHide: true
   enableFingerprint: true
