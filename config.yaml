@@ -134,12 +134,6 @@ menu:
       pre: internal
       post: posts
 
-    - pageref: /posts/
-      name: 文章
-      weight: 2
-      pre: internal
-      post: posts
-
     - pageref: /categories/
       name: 分类
       weight: 3
