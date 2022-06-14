@@ -11,7 +11,7 @@ tags: [ "前端", "CSS" ]
 
 height对应的是父容器的height,父容器没有height(默认0), 所以不能用height 100%;
 
-但是padding 对应的是父容器的weight,父容器width有值(33.3%), 所以可以用padding-top/bottom: 100%;
+但是padding 对应的是父容器的weight,父容器width有值(33.3%), 所以可以用padding-bottom: 100%;
 
 如果是正方形, 把height限死在0;
 
