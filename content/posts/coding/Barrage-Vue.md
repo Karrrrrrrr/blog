@@ -2,7 +2,9 @@
 
 title: "Barrage Vue"
 
-date: 2022-05-15T23:13:05+08:00 cover: https://pic2.zhimg.com/80/v2-f51d4b8162b981b7754c474d64621721_720w.jpg
+date: 2022-05-15T23:13:05+08:00 
+
+cover: https://pic2.zhimg.com/80/v2-f51d4b8162b981b7754c474d64621721_720w.jpg
 
 categories: ["代码",  "前端" ,"Vue"]
 
