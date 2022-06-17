@@ -11,6 +11,7 @@ tags: ["Python","Flask" , "Websocket" ]
 
 flask更新了v2之后， 原先的 Flask + gevent-websocket 无法正常工作， 具体体现在Chrome下使用Websocket连接上马上断开（staus从1变成3） 其他chrome内核浏览器均有该问题，
 firefox正常 
+
 以下是问题代码
 
 ```python
