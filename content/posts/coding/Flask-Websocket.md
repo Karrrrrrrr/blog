@@ -1,6 +1,7 @@
 ---
 title: "Flask Websocket问题"
-date: 2022-06-17T23:44:35+08:00 categories: ["代码","Python" ]
+date: "2022-06-17T23:44:35+08:00"
+categories: ["代码","Python" ]
 tags: ["Python","Flask" , "Websocket" ]
 ---
 
