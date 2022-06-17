@@ -1,15 +1,21 @@
 ---
+
 title: "Barrage Vue"
-date: 2022-05-15T23:13:05+08:00
-cover: https://pic2.zhimg.com/80/v2-f51d4b8162b981b7754c474d64621721_720w.jpg
+
+date: 2022-05-15T23:13:05+08:00 cover: https://pic2.zhimg.com/80/v2-f51d4b8162b981b7754c474d64621721_720w.jpg
+
 categories: ["代码",  "前端" ,"Vue"]
+
 tags: [ "Vue", "前端" ]
+
 ---
 
 ### 关于Vue播放器弹幕的实现
+
 特点：
-- 全屏保持弹幕正常运行， 
-- 鼠标经过弹幕会暂停， 
+
+- 全屏保持弹幕正常运行，
+- 鼠标经过弹幕会暂停，
 - 双击播放器可以全屏，
 - esc或者再次双击退出
 
@@ -74,10 +80,10 @@ tags: [ "Vue", "前端" ]
     <barrage-video />
 </div >
 </body >
-<script src="https://lib.baomitu.com/vue/3.0.2/vue.global.js"></script>
+<script src="https://lib.baomitu.com/vue/3.0.2/vue.global.js" ></script >
 
 <script >
-    const {createApp, ref} = Vue
+    const { createApp, ref } = Vue
 
 
     const useVideo = () => {
@@ -124,11 +130,11 @@ tags: [ "Vue", "前端" ]
             meta.className = 'barrage'
         }
 
-        function onMouseLeave({target}) {
+        function onMouseLeave({ target }) {
             target.style.animationPlayState = 'running';
         }
 
-        function onMouseEnter({target}) {
+        function onMouseEnter({ target }) {
             target.style.animationPlayState = 'paused';
         }
 

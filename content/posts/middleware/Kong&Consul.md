@@ -9,19 +9,27 @@ tags: ["代码" , "微服务" ,"中间件"]
 ---
 
 ---
-机缘巧合，学到了微服务（go-micro），又了解到consul和kong
-所以结合起来实现微服务
+在学完go-micro，consul和kong之后，觉得很方便，想用这几个东西实现一下微服务
 主要的原因就是springCloud全家桶的内存占用实在太高 不只是服务器，开发环境都有点吃不消
-所以放弃Java相关的东西（比如springCloud，Kafka，RockerMQ）
-所以想着用最低的内存实现同样的功能
+所以放弃Java相关的东西（比如springCloud，Kafka，RocketMQ）
+所以想着用更低的内存实现同样的功能
+
 ---
-数据库方面选择Postgres（占用低于Mysql 同时能拓展一些插件，比如zhparser能实现中文分词功能并且能模糊搜索，一方面剩下了ElasticSearch）
+
+数据库方面选择Postgres（占用低于Mysql 同时能拓展一些插件，比如zhparser能实现中文分词功能并且能模糊搜索，一方面省下了ElasticSearch）
+如果pg的分词不能满足需求的话， 建议使用Meilisearch
+
 ---
-缓存Redis没什么好说的
+
+缓存Redis
+
 ---
+
 ---
+
 消息队列本来想使用RabbitMq的，后来了解到NSQ更加轻量，所以改用NSQ
 NSQ（由Go语言编写，占用低，最低的情况大约10M）
+
 ---
 
 ```yaml

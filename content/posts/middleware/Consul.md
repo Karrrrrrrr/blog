@@ -7,11 +7,14 @@ categories: ["代码" , "微服务" ,"中间件"]
 tags: ["代码" , "微服务" ,"中间件"]
 
 --- 
-### consul 是微服务注册中心
-#### 这里结合gin 记录一下使用案例
+# 介绍
+consul 是微服务注册中心
 
 
-##### 这里存在go-micro版本问题 所以注意下载的版本是v3
+这里结合gin 记录一下使用案例
+### 代码实例
+
+这里存在go-micro版本问题 所以注意下载的版本是v3
 
 ```go
 package main
@@ -65,7 +68,7 @@ func main() {
 
 在官网下载 cousul 二进制文件 或者使用docker运行
 ```bash
-docker run -itd -p 8500:8500 --name consul  consul   
+docker run -itd -p 8500:8500 --name consul consul   
 ```
 
 

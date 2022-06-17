@@ -7,8 +7,8 @@ categories: ["代码" , "微服务" ,"中间件", "消息队列"]
 tags: ["代码" , "微服务" ,"中间件", "消息队列"]
 
 ---
-
-消息队列的第二选择
+# 介绍
+消息队列的第二选择， 高性能， 支持多种编程语言
 ```shell
 docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.9-management
 ```

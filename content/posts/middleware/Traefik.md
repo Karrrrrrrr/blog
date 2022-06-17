@@ -6,9 +6,10 @@ categories: ["微服务" ,"中间件"]
 tags: ["微服务" ,"中间件","Proxy","网关"]
 
 ---
+# 介绍
+反向代理工具， 但是无法直接作为静态文件服务器
 
-
-Traefik 静态配置参考
+## 静态配置参考
 ```yaml
 api:
   dashboard: true
@@ -35,7 +36,7 @@ providers:
 ```
 
 
-Traefik动态配置参考
+## 动态配置参考
 ```yaml
 http:
   routers:
@@ -61,7 +62,7 @@ tls:
 
 
 
-## Traefik Middlewares 中间件
+## 中间件
 | 中间件    | 目的 |    区域 |
 |  ----   | ----  | --- | 
 | 添加前缀 (AddPrefix)  |    添加路径前缀 | 路径修改器 | 

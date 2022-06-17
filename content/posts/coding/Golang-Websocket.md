@@ -1,16 +1,16 @@
 ---
-title: Golang Websocket
+title: Gin Websocket
 cover: https://tse3-mm.cn.bing.net/th/id/OIP-C.6WNXKZEe6OrhwI2x-JzRqQHaDt?pid=ImgDet&rs=1
 date: 2022-05-08T18:56:46+08:00
 categories: ["代码", "Golang" ]
 tags: [ "Golang" ,"Websocket"]
 
 ---
+# 介绍
+Websocket 常用于实时通信
 
-### Golang Gin Websocket
-
-
-
+## 代码实现
+Golang Gin Websocket
 ```go
 package ws
 

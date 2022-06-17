@@ -7,6 +7,7 @@ categories: ["代码", "数据库","插件"]
 tags: [ "数据库","插件", "中文分词" ,"搜索引擎" ]
 ---
 
+# 介绍
 zhparser是Postgres的一个插件
 可以用来分词,从而进行搜索
 详情参照[文档](http://www.postgres.cn/docs/14/textsearch-controls.html#TEXTSEARCH-PARSING-DOCUMENTS) 
