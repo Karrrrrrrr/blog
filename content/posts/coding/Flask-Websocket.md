@@ -26,7 +26,7 @@ app = Flask(__name__)
 user_socket_dict={}
 
 @app.route('/ws')
-def ws(username):
+def ws():
     user_socket=request.environ.get("wsgi.websocket")
     if not user_socket:
         return "请以WEBSOCKET方式连接"

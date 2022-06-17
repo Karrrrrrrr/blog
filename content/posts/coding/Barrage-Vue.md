@@ -188,3 +188,8 @@ tags: [ "Vue", "前端" ]
 </script >
 </html >
 ```
+
+
+<div style="width: 100%">
+    <iframe src="/template/Barrage-Vue.html" style="width: 100%; border: 0; height: 500px"></iframe>
+</div>

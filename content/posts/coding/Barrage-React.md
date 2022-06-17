@@ -19,6 +19,10 @@ tags: ["React", "前端" ]
 - 双击播放器可以全屏，
 - esc或者再次双击退出
 
+<div style="width: 100%">
+    <iframe src="/template/Barrage-Vue.html" style="width: 100%; border: 0; height: 500px"></iframe>
+</div>
+
 ```typescript jsx
 import {MouseEventHandler, useRef, useState} from 'react'
 import './App.css'
