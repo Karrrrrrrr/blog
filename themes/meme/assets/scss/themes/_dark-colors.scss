@@ -35,6 +35,11 @@
   --code-bg-color        : #282c34
 }
 
+@font-face {
+  font-family: f1;
+  src: url("../../fonts/f1.woff");
+}
+
 html[data-theme="dark"] {
   .line .comment,
   .line .block-comment,
@@ -61,6 +66,7 @@ html[data-theme="dark"] {
 
   .line .boolean,
   .line .number,
+  .line .nd,
   .line .kd {
     color : #f08d49 !important
   }
@@ -76,12 +82,15 @@ html[data-theme="dark"] {
   .line .important,
   .line .atrule,
   .line .kr,
+  .line .k,
   .line .builtin {
     color : #7FDBCA !important
     //color : #cc99cd !important
   }
 
   .line .s1,
+  .line .s2,
+  .line .s,
   .line .char,
   .line .attr-value,
   .line .regex,
@@ -108,12 +117,17 @@ html[data-theme="dark"] {
   .line .inserted {
     color : green
   }
+
   .line .nx {
-    color: #c792ea !important;
+    color : #c792ea !important;
   }
 
   .chroma {
     //background : rgb(22, 31, 50) !important;
+  }
+
+  .line * {
+    font-family: f1 !important;
   }
 
 }
