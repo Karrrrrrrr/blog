@@ -115,5 +115,8 @@ ffmpeg -i "2022-06-30_15-09-54.mp4" -c:a copy -vf "transpose=1" -b:v 500k -bufsi
 <style>
     .main-inner {
         width: 1000px !important;
+   }
+   h1, h2, h3 {
+   text-align: center;
 }
 </style>
