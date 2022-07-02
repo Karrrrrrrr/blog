@@ -112,7 +112,7 @@ ffmpeg -i ./input.mp4 -b:v 2000k -c:v libx264 -c:a copy -pass 2 ./output.mp4
 ffmpeg -i "2022-06-30_15-09-54.mp4" -c:a copy -vf "transpose=1" -b:v 500k -bufsize 500k 2022-06-30_15-35-10.cp1.mp4
 ```
 
-直接旋转元数据，不修改内容的，很快 （不改变码率）
+直接旋转元数据，不修改内容的，很快 （不改变码率）(好像不起作用。。。依然会被微信识别成横屏)
 ```shell
 ffmpeg -i {inputName} -metadata:s:v rotate="90" -codec copy {outPutName}
 ```
