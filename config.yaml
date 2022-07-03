@@ -291,7 +291,7 @@ params:
   duration: 0.5
   primaryColorLight: 220, 90%, 56%
   primaryColorDark: 201, 65%, 62%
-  postWidth: 36
+  postWidth: 50
   original: true
   displayPostDescription: true
   enablePostMeta: true
