@@ -24,3 +24,13 @@ docker export
 
 docker import 
 ```
+
+## Docker日志限制大小
+在docker-compose中配置日志大小， 防止磁盘爆满
+```yaml
+logging:
+  options:
+    max-size: '12m'
+    max-file: '5'
+  driver: json-file
+```

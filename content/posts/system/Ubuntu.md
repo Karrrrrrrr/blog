@@ -25,3 +25,12 @@ deb http://mirrors.163.com/ubuntu/ focal-backports main restricted universe mult
 ```shell
 apt install update
 ```
+
+有时候磁盘慢， 需要手动排查大文件
+```shell
+df -h # 查看分区大小
+```
+知道哪里满了之后， cd到那个位置， 查看具体文件夹
+```shell
+du -h --max-depth=1 # 只查看一层大小
+```

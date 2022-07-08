@@ -1,6 +1,5 @@
 ---
-title: Postgres 高阶用法
-date: 2022-05-20T00:53:09+08:00
+title: Postgres 高阶用法 date: 2022-05-20T00:53:09+08:00
 
 cover: https://pic4.zhimg.com/80/v2-af80b26c6bd5a71eba219eb1e10b579b_720w.jpg
 
@@ -10,6 +9,25 @@ tags: ["数据库" , "Postgres"]
 ---
 
 # Postgres 高阶用法
+
+## 查看占用
+
+```postgresql
+  SELECT d.datname                            AS "实例名",
+         pg_catalog.pg_get_userbyid(d.datdba) AS "所属者",
+         CASE
+	         WHEN pg_catalog.has_database_privilege(d.datname, 'CONNECT')
+		         THEN pg_catalog.pg_size_pretty(pg_catalog.pg_database_size(d.datname))
+	         ELSE 'No Access'
+	         END                                AS "大小"
+  FROM pg_catalog.pg_database d
+  ORDER BY CASE
+	           WHEN pg_catalog.has_database_privilege(d.datname, 'CONNECT')
+		           THEN pg_catalog.pg_database_size(d.datname)
+	           ELSE NULL
+	           END DESC
+  LIMIT 20;
+```
 
 ## 数据篇
 
