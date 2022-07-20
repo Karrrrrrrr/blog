@@ -9,8 +9,8 @@ date: "2022-07-20T15:47:48+08:00"
 
 ```scss
 .window {
-  $transitionX : 15%;
-  $duration    : 300ms;
+  $transitionX : 30px;
+  $duration    : 500ms;
 
   &-enter {
     transform : translate($transitionX, 0);
@@ -21,6 +21,8 @@ date: "2022-07-20T15:47:48+08:00"
     transform  : translate(0, 0);
     opacity    : 1;
     transition : all $duration;
+    //transition-delay : $duration;
+
   }
 
   &-exit {
@@ -32,7 +34,9 @@ date: "2022-07-20T15:47:48+08:00"
     transform  : translate(-$transitionX, 0);
     opacity    : 0;
     transition : all $duration;
+    //transition-delay :  $duration;
   }
+
 }
 
 ```
@@ -42,6 +46,7 @@ date: "2022-07-20T15:47:48+08:00"
 
 const Window = () => {
     const location = useLocation()
+    const outlet = useOutlet() // 核心代码， 用<Outlet/> 直接替换， 不会有动画效果
     return <div style={ { width: 600, height: 400, outline: '1px solid black', overflow: 'hidden' } } >
         <SwitchTransition mode="out-in" >
             <CSSTransition
@@ -49,7 +54,8 @@ const Window = () => {
                 timeout={ 300 }
                 key={ location.pathname }
             >
-                <Outlet />
+                {/*<Outlet />*/}
+                { outlet }
             </CSSTransition >
         </SwitchTransition >
     </div >
@@ -63,8 +69,7 @@ const App = () => {
         'about'
     ]
     return (
-        <HashRouter >
-            <Demo />
+        <HashRouter > 
             <div >
                 {
                     links.map(item => {
