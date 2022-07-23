@@ -29,3 +29,5 @@ volumes:
   - name: html
     host:
       path: /docker/hugo/data
+
+
