@@ -202,7 +202,7 @@ params:
   fontUnit: em
   largestFontSize: 2.5
   smallestFontSize: 1
-  listWidth: 36
+  listWidth: 50 # 列表宽度
   displayListTitle: true
   listDateFormat: 1 月 2 日
   listDatePosition: right
@@ -292,7 +292,7 @@ params:
   duration: 0.5
   primaryColorLight: 220, 90%, 56%
   primaryColorDark: 201, 65%, 62%
-  postWidth: 50
+  postWidth: 50 # 文章宽度
   original: true
   displayPostDescription: true
   enablePostMeta: true
