@@ -3,6 +3,11 @@ kind: pipeline
 type: docker
 name: default
 
+
+clone:
+  depth: 1
+
+
 steps:
   - name: backend
     image: 438577872/hugo
