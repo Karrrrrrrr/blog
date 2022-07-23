@@ -7,7 +7,7 @@ name: default
 clone:
   depth: 1
 
-
+# git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 steps:
   - name: backend
     image: 438577872/hugo
@@ -20,7 +20,7 @@ steps:
 #      CGO_ENABLED: 0
 
     commands:
-      - hugo
+      - hugo --minify
       - rm -rf /data/html
       - mv ./public /data/html
 
