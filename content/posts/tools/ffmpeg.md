@@ -1,7 +1,8 @@
 ---
 title: "ffmpeg"
-
-date: 2022-06-30T16:31:34+08:00
+date: "2022-06-30T16:31:34+08:00"
+categories: ["工具"]
+tags: ["video"]
 ---
 
 # ffmpeg

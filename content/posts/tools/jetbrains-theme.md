@@ -1,6 +1,8 @@
 ---
 title: "Jetbrains Theme"
 date: "2022-07-12T22:49:39+08:00"
+categories: ["工具"]
+tags: ["Jetbrains"]
 ---
 
 # 修改jetbrains系App启动图片

@@ -1,6 +1,8 @@
 ---
 title: "Jetbrains Terminal"
-date: "2022-08-28T21:13:14+08:00" 
+date: "2022-08-28T21:13:14+08:00"
+categories: ["工具"]
+tags: ["Jetbrains"]
 ---
 
 Goland的终端分为两种， 一种是过长不换行的，像windows的， 该模式下写gin会被认为是非终端， 日志不会有颜色
