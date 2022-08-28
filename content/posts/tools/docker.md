@@ -1,6 +1,6 @@
 ---
-title: Docker
-cover: https://images.alphacoders.com/227/thumbbig-227923.webp
+title: "Docker"
+cover: "https://images.alphacoders.com/227/thumbbig-227923.webp"
 categories: ["工具"]
 tags: ["Docker"]
 
@@ -46,6 +46,7 @@ echo '{
   }
 }' >   /home/kar/.docker/config.json
 ```
+
 本质上就是 Base64("${Username}:${Password}")的返回值
 
 然后存到 /home/kar/.docker/config.json 文件里
