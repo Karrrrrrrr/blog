@@ -34,3 +34,18 @@ logging:
     max-file: '5'
   driver: json-file
 ```
+
+
+## Docker登录认证
+```shell
+echo '{
+  "auths": {
+    "registry.cn-hangzhou.aliyuncs.com": {
+      "auth": "a2FyMTExMTExOjIwMDEwMjE4MTI3N0R5Xw"
+    }
+  }
+}' >   /home/kar/.docker/config.json
+```
+本质上就是 Base64("${Username}:${Password}")的返回值
+
+然后存到 /home/kar/.docker/config.json 文件里
