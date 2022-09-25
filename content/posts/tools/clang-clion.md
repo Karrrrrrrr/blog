@@ -1,17 +1,15 @@
 ---
-title: "Clang和Clion配合的问题"
-date: "2022-09-25T21:13:14+08:00"
-categories: ["工具"]
-tags: ["Jetbrains"]
+title: "Clang Clion"
+date: "2022-09-25T21:04:00+08:00"
 ---
 
-Clion在配合CLang的时候会有一些误报
-解决方案:
+
+Clion在配合CLang的时候会有一些误报 解决方案:
 > 在设置中添加 -fsized-deallocation 到 clangd 标志 | 语言和框架 | C/C++ | Clangd 应该解决问题
 
 
-另外 Clang 没有 万能头
-需要手动创建
+另外 Clang 没有 万能头 需要手动创建
+
 ```cpp
 // C++ includes used for precompiling -*- C++ -*-
 
@@ -177,5 +175,4 @@ Clion在配合CLang的时候会有一些误报
 #endif
 ```
 
-另外msys2默认的mingw64无法被clion识别,需要手动复制include 
-到mingw下面的x86_64-w64-mingw32下面
+另外msys2默认的mingw64无法被clion识别,需要手动复制include 到mingw下面的x86_64-w64-mingw32下面
