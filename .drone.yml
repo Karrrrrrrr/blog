@@ -23,6 +23,7 @@ steps:
       - hugo --minify
       - rm -rf /data/html
       - mv ./public /data/html
+      - ls /data/
       - cp -r /data/s /data/html/s
 
 volumes:
