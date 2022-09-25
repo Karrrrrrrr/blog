@@ -29,6 +29,6 @@ steps:
 volumes:
   - name: html
     host:
-      path: /docker/blog_nginx/data
+      path: /home/docker/blog_nginx/data
 
 
