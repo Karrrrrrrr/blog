@@ -11,3 +11,5 @@ Goland的终端分为两种， 一种是过长不换行的，像windows的， �
 
 切换方法 
 修改注册表```go.run.processes.with.pty ```的值, 打钩为pty(强制换行)
+
+
