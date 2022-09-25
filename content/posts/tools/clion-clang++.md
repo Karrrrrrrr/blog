@@ -177,4 +177,5 @@ Clion在配合CLang的时候会有一些误报
 #endif
 ```
 
-另外msys2默认的mingw64无法被clion识别,需要手动复制include 到 mingw下面的x86_64-w64-mingw32下面
+另外msys2默认的mingw64无法被clion识别,需要手动复制include 
+到mingw下面的x86_64-w64-mingw32下面
