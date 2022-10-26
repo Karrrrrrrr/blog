@@ -93,6 +93,23 @@ exec "${HERE}"/netease-cloud-music $@
 ---
 
 ## 系统篇
+### 国内源
+```text
+# deb http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse
+# deb http://security.ubuntu.com/ubuntu/ jammy-security main restricted universe multiverse
+# deb http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse
+
+# 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse
+deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-security main restricted universe multiverse
+# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-security main restricted universe multiverse
+```
+
+
 
 ### 进不去grub
 ```shell

@@ -1,1 +1,1 @@
-git add . && git add * && git commit -m "微调" && git push origin main
+git add . && git add * && git commit -m "折腾" && git push origin main && git push bk main
