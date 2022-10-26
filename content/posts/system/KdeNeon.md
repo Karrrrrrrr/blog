@@ -1,7 +1,6 @@
 ---
 title: KDE Neon
-date: 2022-05-17T02:24:21+08:00
-cover: https://pic2.zhimg.com/80/v2-5163a11deb63b9884a67042455714a89_720w.jpg
+date: 2022-10-26T02:24:21+08:00 
 categories: ["系统" , "Linux", "KDE"]
 tags: ["系统" , "Linux" , "KDE"]
 --- 
