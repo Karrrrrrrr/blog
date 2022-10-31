@@ -14,6 +14,10 @@ tags: ["系统" , "Linux" , "KDE"]
 
 用麒麟的， 不用deepin的， deepin的有bug
 
+麒麟也有bug， 不支持cv进图片， 支持自带的截图工具
+deepin版本反之
+相比之下 麒麟版本好用
+
 
 
 ###  Latte-Dock
@@ -121,9 +125,35 @@ normal
 
 ### GRUB
 更新GRUB无效 不知道为啥
+已解决， grub.d文件夹下有theme文件，删了就行
+如果update-grub找不到windows分区，用pe修复下就行，原因是update-grub会去efi下找windows
+
+### git
+对于不在自己分区的git仓库， 无法直接提交，需要修改权限， 或者忽略权限验证 
+如下
+```shell
+git config --global --add safe.directory "*" 
+```
 
 ### SSH免密码
 ```shell
 ssh-keygen -t rsa
 ```
 .pub传给服务器
+### 主题
+```shell
+/home/kar/.local/share/aurorae/themes/Lisa/
+```
+
+
+### 开机挂载硬盘
+```shell
+blkid
+# 找到挂载的uuid
+sudo vim /etc/fstab
+``` 
+```text
+写入如下，保存即可
+UUID="86104B60104B5679"                   /home/kar/Data        ntfs defaults 0 0 
+```
+
