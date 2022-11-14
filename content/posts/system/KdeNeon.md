@@ -51,6 +51,7 @@ sudo apt install libx11-xcb-dev
 sudo apt install kirigami2-dev
 sudo apt install libwayland-dev
 sudo apt install libqt5waylandclient5-dev 
+# 好像还有个Waylandprotocol
 ```
 ### 某
 ```text
@@ -62,6 +63,7 @@ sudo apt install yakuake
 ```
 ### Docker
 ```shell
+# 这里有个坑, 如果是snap安装的docker 默认不创建docker用户, 需要手动创建, apt则不会
 sudo gpasswd -a $USER docker 
 newgrp docker
 ```
