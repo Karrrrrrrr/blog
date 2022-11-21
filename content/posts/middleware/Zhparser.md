@@ -100,3 +100,62 @@ zhparser.multi_zmain = true
 zhparser.multi_zall = false
 
 ```
+
+编译mini版本必须用同版本的pg才行
+
+## mini版本编译
+```text
+FROM postgres:15 as builder
+
+RUN echo "deb http://mirrors.ustc.edu.cn/debian stable main contrib non-free\n# deb-src http://mirrors.ustc.edu.cn/debian stable main contrib non-free\ndeb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free\n# deb-src http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free\n# deb http://mirrors.ustc.edu.cn/debian stable-proposed-updates main contrib non-free\n# deb-src http://mirrors.ustc.edu.cn/debian stable-proposed-updates main contrib non-free" > /etc/apt/sources.list && \
+    apt-get update && apt-get install -y --no-install-recommends bzip2 gcc make libc-dev postgresql-server-dev-$PG_MAJOR wget  unzip  ca-certificates openssl && rm -rf /var/lib/apt/lists/*   && wget -q -O - "http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2" | tar xjf -   && wget -O zhparser.zip "https://ghproxy.com/https://github.com/amutu/zhparser/archive/master.zip"   && unzip zhparser.zip   && cd scws-1.2.3   && ./configure   && make install   && cd /zhparser-master   && SCWS_HOME=/usr/local make && make install
+
+FROM postgres:15-alpine3.16
+COPY --from=builder /usr/lib/postgresql/15/lib/bitcode/zhparser                             /usr/local/lib/postgresql/bitcode/zhparser/
+COPY --from=builder /usr/lib/postgresql/15/lib/bitcode/zhparser/zhparser.bc                 /usr/local/lib/postgresql/bitcode/zhparser/zhparser.bc
+COPY --from=builder /usr/lib/postgresql/15/lib/zhparser.so                                  /usr/local/lib/postgresql/zhparser.so
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--unpackaged--1.0.sql        /usr/local/share/postgresql/extension/zhparser--unpackaged--1.0.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--2.1--2.2.sql               /usr/local/share/postgresql/extension/zhparser--2.1--2.2.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--1.0--2.0.sql               /usr/local/share/postgresql/extension/zhparser--1.0--2.0.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--2.1.sql                    /usr/local/share/postgresql/extension/zhparser--2.1.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--2.0--2.1.sql               /usr/local/share/postgresql/extension/zhparser--2.0--2.1.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--1.0.sql                    /usr/local/share/postgresql/extension/zhparser--1.0.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser.control                     /usr/local/share/postgresql/extension/zhparser.control
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--2.0.sql                    /usr/local/share/postgresql/extension/zhparser--2.0.sql
+COPY --from=builder /usr/local/lib/libscws.la                                               /lib/libscws.la
+COPY --from=builder /usr/local/lib/libscws.so.1.1.0                                         /lib/libscws.so.1.1.0
+COPY --from=builder /usr/share/postgresql/15/tsearch_data/dict.utf8.xdb                     /usr/local/share/postgresql/tsearch_data/dict.utf8.xdb
+COPY --from=builder /usr/share/postgresql/15/tsearch_data/rules.utf8.ini                    /usr/local/share/postgresql/tsearch_data/rules.utf8.ini
+RUN ln -s /lib/libscws.so.1.1.0 /lib/libscws.so.1 && ln -s /lib/libscws.so.1.1.0 /lib/libscws.so && echo "CREATE EXTENSION pg_trgm;CREATE EXTENSION zhparser;CREATE TEXT SEARCH CONFIGURATION chinese_zh (PARSER = zhparser);ALTER TEXT SEARCH CONFIGURATION chinese_zh ADD MAPPING FOR n,v,a,i,e,l,t WITH simple;" > /docker-entrypoint-initdb.d/init-zhparser.sql
+CMD ["postgres"]
+```
+
+## deb版本编译
+```text
+FROM postgres:15 as builder
+
+RUN echo "deb http://mirrors.ustc.edu.cn/debian stable main contrib non-free\n# deb-src http://mirrors.ustc.edu.cn/debian stable main contrib non-free\ndeb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free\n# deb-src http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free\n# deb http://mirrors.ustc.edu.cn/debian stable-proposed-updates main contrib non-free\n# deb-src http://mirrors.ustc.edu.cn/debian stable-proposed-updates main contrib non-free" > /etc/apt/sources.list && \
+    apt-get update && apt-get install -y --no-install-recommends bzip2 gcc make libc-dev postgresql-server-dev-$PG_MAJOR wget  unzip  ca-certificates openssl && rm -rf /var/lib/apt/lists/*   && wget -q -O - "http://www.xunsearch.com/scws/down/scws-1.2.3.tar.bz2" | tar xjf -   && wget -O zhparser.zip "https://ghproxy.com/https://github.com/amutu/zhparser/archive/master.zip"   && unzip zhparser.zip   && cd scws-1.2.3   && ./configure   && make install   && cd /zhparser-master   && SCWS_HOME=/usr/local make && make install
+
+FROM postgres:15
+COPY --from=builder /usr/lib/postgresql/15/lib/bitcode/zhparser                             /usr/lib/postgresql/15/lib/bitcode/zhparser
+COPY --from=builder /usr/lib/postgresql/15/lib/bitcode/zhparser/zhparser.bc                 /usr/lib/postgresql/15/lib/bitcode/zhparser/zhparser.bc
+COPY --from=builder /usr/lib/postgresql/15/lib/bitcode/zhparser.index.bc                    /usr/lib/postgresql/15/lib/bitcode/zhparser.index.bc
+COPY --from=builder /usr/lib/postgresql/15/lib/zhparser.so                                  /usr/lib/postgresql/15/lib/zhparser.so
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--unpackaged--1.0.sql        /usr/share/postgresql/15/extension/zhparser--unpackaged--1.0.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--2.1--2.2.sql               /usr/share/postgresql/15/extension/zhparser--2.1--2.2.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--1.0--2.0.sql               /usr/share/postgresql/15/extension/zhparser--1.0--2.0.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--2.1.sql                    /usr/share/postgresql/15/extension/zhparser--2.1.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--2.0--2.1.sql               /usr/share/postgresql/15/extension/zhparser--2.0--2.1.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--1.0.sql                    /usr/share/postgresql/15/extension/zhparser--1.0.sql
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser.control                     /usr/share/postgresql/15/extension/zhparser.control
+COPY --from=builder /usr/share/postgresql/15/extension/zhparser--2.0.sql                    /usr/share/postgresql/15/extension/zhparser--2.0.sql
+COPY --from=builder /usr/local/lib/libscws.la                                               /usr/local/lib/libscws.la
+COPY --from=builder /usr/local/lib/libscws.so                                               /usr/local/lib/libscws.so
+COPY --from=builder /usr/local/lib/libscws.so.1.1.0                                         /usr/local/lib/libscws.so.1.1.0
+COPY --from=builder /usr/local/lib/libscws.so.1                                             /usr/local/lib/libscws.so.1
+COPY --from=builder /usr/share/postgresql/15/tsearch_data/dict.utf8.xdb                     /usr/share/postgresql/15/tsearch_data/dict.utf8.xdb
+COPY --from=builder /usr/share/postgresql/15/tsearch_data/rules.utf8.ini                    /usr/share/postgresql/15/tsearch_data/rules.utf8.ini
+
+CMD ["postgres"]
+```
