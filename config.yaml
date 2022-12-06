@@ -129,6 +129,12 @@ menu:
       pre: internal
       post: live
 
+    - pageref: /algo
+      name: 算法
+      weight: 2
+      pre: internal
+      post: algo
+
     - pageref: /posts/
       name: 文章
       weight: 2
