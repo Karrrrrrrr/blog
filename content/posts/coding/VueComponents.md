@@ -122,3 +122,28 @@ count=20
 part=$(echo "$length / $count" | bc)
 ffmpeg -v fatal -y -skip_frame nokey -i ${fileName}  -vf "fps=fps=1/${part},scale=200:100,tile=${count}x1" -an -vsync 0 output_%03d.png
 ```
+
+
+## 拖拽文件到div上传
+```vue
+<template>
+    <div class="upload-box" @drop="onDrop" @dragenter="ondragenter" @dragover="ondragover" />
+</template>
+
+<script setup lang="ts">
+const onDrop = (e: DragEvent) => {
+  e.preventDefault()
+  const file = e.dataTransfer?.files[0] as File
+  // do anything 
+  return false
+}
+const ondragenter = function (e: Event) {
+  e.preventDefault()
+}
+
+const ondragover = function (e: Event) {
+  e.preventDefault()
+}
+</script>
+
+```
