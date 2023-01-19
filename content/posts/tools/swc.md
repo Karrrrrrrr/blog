@@ -4,7 +4,7 @@ title: "SWC"
 
 date: "2023-01-19T18:10:37+08:00"
 
-categories: ["工具"]
+categories: ["前端"]
 
 tags: ["前端","ts","js","编译"]
 
