@@ -2,6 +2,8 @@
 title: "Webrtc"
 date: "2022-01-19T18:21:11+08:00"
 draft: false
+categories: ["代码", "前端", "Websocket","WebRTC" ]
+tags: [ "前端", "Typescript","Websocket" ]
 ---
 
 ```ts

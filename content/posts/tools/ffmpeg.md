@@ -119,8 +119,8 @@ ffmpeg -i {inputName} -metadata:s:v rotate="90" -codec copy {outPutName}
 ```
 
 <style>
-    .main-inner {
-        width: 1000px !important;
+.main-inner {
+   width: 1000px !important;
    }
    h1, h2, h3 {
    text-align: center;
