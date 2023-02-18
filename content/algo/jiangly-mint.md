@@ -121,15 +121,15 @@ constexpr MInt<P> CInv = MInt<P>(V).inv();
 constexpr int P = 998244353;
 using Z = MInt<P>;
 
-struct Comb {
+struct Combinatorics {
     int n;
     std::vector<Z> _fac;
     std::vector<Z> _invfac;
     std::vector<Z> _inv;
 
-    Comb() : n{0}, _fac{1}, _invfac{1}, _inv{0} {}
+    Combinatorics() : n{0}, _fac{1}, _invfac{1}, _inv{0} {}
 
-    Comb(int n) : Comb() {
+    Combinatorics(int n) : Combinatorics() {
         init(n);
     }
 
@@ -171,5 +171,6 @@ struct Comb {
         if (n < m || m < 0) return 0;
         return fac(n) * invfac(m) * invfac(n - m);
     }
-} comb;
+} combinatorics;
+
 ```
