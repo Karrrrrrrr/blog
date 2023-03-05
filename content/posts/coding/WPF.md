@@ -240,6 +240,7 @@ private void OnExit(object sender, RoutedEventArgs e) {
 
 ## 路由式切换
 ```C#
+
 private void OnClick(object sender, RoutedEventArgs e) {
     Uri uri = new Uri("./pages/Login.xaml", UriKind.Relative);
     if (NavigationService != null) 
