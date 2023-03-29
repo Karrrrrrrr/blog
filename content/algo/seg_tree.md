@@ -26,8 +26,8 @@ private:
         }
 
         push_down(id);
-        add(id << 1, l, r);
-        add(id << 1 | 1, l, r);
+        _add(id << 1, l, r);
+        _add(id << 1 | 1, l, r);
         push_up(id);
     }
 
@@ -48,7 +48,7 @@ public:
         build(1, 1, n);
     }
 
-    void build(int id, int l, int r, vector<int> &data) {
+    void build(int id, int l, int r, vector<T> &data) {
         nodes[id].l = l;
         nodes[id].r = r;
 
@@ -57,10 +57,26 @@ public:
             return;
         }
         int mid = (l + r) >> 1;
-        build(id << 1, l, mid);
-        build(id << 1 | 1, mid + 1, r);
+        build(id << 1, l, mid,data);
+        build(id << 1 | 1, mid + 1, r,data);
         push_up(id);
     }
+    
+    void build(int id, int l, int r, T* &data) {
+        nodes[id].l = l;
+        nodes[id].r = r;
+
+        if (l == r) {
+            nodes[id].val = data[l];
+            return;
+        }
+        int mid = (l + r) >> 1;
+        build(id << 1, l, mid,data);
+        build(id << 1 | 1, mid + 1, r,data);
+        push_up(id);
+    }
+    
+    
 
     void build(int id, int l, int r) {
         nodes[id].l = l;
