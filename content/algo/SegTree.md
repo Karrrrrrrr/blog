@@ -4,7 +4,7 @@ date: "2023-03-26T17:26:51+08:00"
 ---
 
 ## 最顺手的线段树
-```
+```c++
 // 线段树
 template<typename T = int>
 class SegTree {

@@ -4,8 +4,7 @@ date: "2023-03-31T17:26:51+08:00"
 ---
 
 ## 最小表示法
-```
-
+```c++
 template<typename T=ll>
 vector<T> minVector(vector<T> &v) {
     int n = v.size();
