@@ -40,14 +40,28 @@ private:
         return _query(id << 1, l, r) + _query(id << 1 | 1, l, r);
     }
 
+    void pushUp(int id) {
+        nodes[id].val = nodes[id << 1].val + nodes[id << 1 | 1].val;
+    }
+
+    void pushDown(int id) {
+        if (nodes[id].lazy) {
+            nodes[id << 1].lazy += nodes[id].lazy;
+            nodes[id << 1].val += nodes[id].lazy * (nodes[id << 1].r - nodes[id << 1].l + 1);
+            nodes[id << 1 | 1].lazy += nodes[id].lazy;
+            nodes[id << 1 | 1].val += nodes[id].lazy * (nodes[id << 1 | 1].r - nodes[id << 1 | 1].l + 1);
+            nodes[id].lazy = 0;
+        }
+
+    }
 public:
     vector<Node> nodes;
-
+    // 啥也不干
     SegTree(int n) {
         nodes.resize(n << 2);
         build(1, 1, n);
     }
-
+    // 允许传入一个vector
     void build(int id, int l, int r, vector<T> &data) {
         nodes[id].l = l;
         nodes[id].r = r;
@@ -61,7 +75,7 @@ public:
         build(id << 1 | 1, mid + 1, r,data);
         pushUp(id);
     }
-    
+    // 允许传入一个C数组
     void build(int id, int l, int r, T* &data) {
         nodes[id].l = l;
         nodes[id].r = r;
@@ -95,20 +109,6 @@ public:
         _add(1, left, right, x);
     }
 
-    void pushUp(int id) {
-        nodes[id].val = nodes[id << 1].val + nodes[id << 1 | 1].val;
-    }
-
-    void pushDown(int id) {
-        if (nodes[id].lazy) {
-            nodes[id << 1].lazy += nodes[id].lazy;
-            nodes[id << 1].val += nodes[id].lazy * (nodes[id << 1].r - nodes[id << 1].l + 1);
-            nodes[id << 1 | 1].lazy += nodes[id].lazy;
-            nodes[id << 1 | 1].val += nodes[id].lazy * (nodes[id << 1 | 1].r - nodes[id << 1 | 1].l + 1);
-            nodes[id].lazy = 0;
-        }
-
-    }
 
     T query(int left, int right) {
         return _query(1, left, right);
