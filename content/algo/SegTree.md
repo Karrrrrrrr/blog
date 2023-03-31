@@ -56,10 +56,11 @@ private:
     }
 public:
     vector<Node> nodes;
-    // 啥也不干
+    
+    // 初始化线段树长度, 如果需要初始化值, 那么调用带参build, 不然调用无参build
     SegTree(int n) {
         nodes.resize(n << 2);
-        build(1, 1, n);
+        // build(1, 1, n);
     }
     // 允许传入一个vector
     void build(int id, int l, int r, vector<T> &data) {
