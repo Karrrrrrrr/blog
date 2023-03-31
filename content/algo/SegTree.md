@@ -16,7 +16,7 @@ private:
         T val, lazy = 0;
     };
 
-    void _add(int id, int l, int r, T x = 1) {
+    void _add(int id, int l, int r, T x) {
         if (nodes[id].l > r || nodes[id].r < l) return;
 
         if (nodes[id].l >= l && nodes[id].r <= r) {
@@ -25,10 +25,10 @@ private:
             return;
         }
 
-        push_down(id);
-        _add(id << 1, l, r);
-        _add(id << 1 | 1, l, r);
-        push_up(id);
+        pushDown(id);
+        _add(id << 1, l, r, x);
+        _add(id << 1 | 1, l, r, x);
+        pushUp(id);
     }
 
     ll _query(int id, int l, int r) {
@@ -36,7 +36,7 @@ private:
         if (nodes[id].l >= l && nodes[id].r <= r) {
             return nodes[id].val;
         }
-        push_down(id);
+        pushDown(id);
         return _query(id << 1, l, r) + _query(id << 1 | 1, l, r);
     }
 
@@ -59,7 +59,7 @@ public:
         int mid = (l + r) >> 1;
         build(id << 1, l, mid,data);
         build(id << 1 | 1, mid + 1, r,data);
-        push_up(id);
+        pushUp(id);
     }
     
     void build(int id, int l, int r, T* &data) {
@@ -73,7 +73,7 @@ public:
         int mid = (l + r) >> 1;
         build(id << 1, l, mid,data);
         build(id << 1 | 1, mid + 1, r,data);
-        push_up(id);
+        pushUp(id);
     }
     
     
@@ -95,11 +95,11 @@ public:
         _add(1, left, right, x);
     }
 
-    void push_up(int id) {
+    void pushUp(int id) {
         nodes[id].val = nodes[id << 1].val + nodes[id << 1 | 1].val;
     }
 
-    void push_down(int id) {
+    void pushDown(int id) {
         if (nodes[id].lazy) {
             nodes[id << 1].lazy += nodes[id].lazy;
             nodes[id << 1].val += nodes[id].lazy * (nodes[id << 1].r - nodes[id << 1].l + 1);
