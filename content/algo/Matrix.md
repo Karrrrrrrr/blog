@@ -103,14 +103,6 @@ public:
 
 
 ```c++
-#pragma comment(linker, "/STACK:1024000000,1024000000")
-#ifdef O2
-#pragma GCC target("avx")
-#pragma GCC optimize(2)
-#pragma GCC optimize(3)
-#pragma GCC optimize("Ofast")
-#endif
-
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -119,53 +111,6 @@ typedef long long int ll;
 typedef unsigned long long int ull;
 const ll inf = 0x7fffffff;
 const ll mod = 998244353;
-//const ll mod = 1E9 + 7;
-#define green    "\033[97;32m"
-#define white    "\033[90;32m"
-#define yellow   "\033[90;33m"
-#define red      "\033[97;31m"
-#define blue     "\033[97;34m"
-#define magenta  "\033[97;35m"
-#define cyan     "\033[97;36m"
-#define reset    "\033[0m"
-#define debug    cout << red
-
-template<typename T = ll>
-void print(const vector<T> &v) {
-    cout << "[";
-    for (auto item: v) cout << " " << item;
-    cout << "]" << endl;
-}
-
-template<typename K = ll, typename V = ll>
-void print(const pair<K, V> &p) {
-    cout << p.first << ":" << p.second << ",";
-}
-
-template<typename K = ll, typename V = ll>
-void print(const map<K, V> &m) {
-    cout << "{";
-    for (auto item: m) print(item);
-    cout << "}" << endl;
-}
-
-// 幂
-ll power(ll a, ll b) {
-    ll ans = 1;
-    while (b) {
-        if (b & 1) ans *= a, ans %= mod;
-        a *= a, a %= mod, b >>= 1;
-    }
-    return ans;
-}
-
-// 组合数
-ll C(ll low, ll high) {
-    ll ans = 1;
-    for (ll i = high - low + 1; i <= high; i++) ans *= i, ans %= mod;
-    for (ll i = 2; i <= low; i++) ans = ans * power(i, mod - 2), ans %= mod;
-    return ans;
-}
 
 void init() {
 #ifdef endl
