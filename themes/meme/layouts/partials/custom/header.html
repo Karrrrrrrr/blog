@@ -1,17 +1,36 @@
-<meta name="referrer" content="no-referrer" />
-<!--<script src="https://polyfill.io/v3/polyfill.min.js?features=es6" ></script >-->
-<script type="text/javascript" id="MathJax-script" async src="/tex-chtml.js" ></script >
-<style >
-    .MJX-TEX {
-        padding : 5px !important;
-    }
+<!--<meta name="referrer" content="no-referrer" />-->
+<!--&lt;!&ndash;<script src="https://polyfill.io/v3/polyfill.min.js?features=es6" ></script >&ndash;&gt;-->
+<!--<script type="text/javascript" id="MathJax-script" async src="/tex-chtml.js" ></script >-->
+<!--<style >-->
+<!--    .MJX-TEX {-->
+<!--        padding : 5px !important;-->
+<!--    }-->
 
-    .TEX-I {
-        margin-left : 3px !important;
-    }
+<!--    .TEX-I {-->
+<!--        margin-left : 3px !important;-->
+<!--    }-->
 
-    .mjx-n {
-        margin-left : -1px;
-        margin-right : -1px;
-    }
-</style >
+<!--    .mjx-n {-->
+<!--        margin-left : -1px;-->
+<!--        margin-right : -1px;-->
+<!--    }-->
+<!--</style >-->
+
+
+
+
+<link rel="stylesheet" href="/katex.min.css" >
+<script defer src="/katex.min.js"></script>
+<script defer src="/contrib/auto-render.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        renderMathInElement(document.body, {
+            delimiters: [
+                {left: "$$", right: "$$", display: true},
+                {left: "$", right: "$", display: false},
+                {left: "\\(", right: "\\)", display: false},
+                {left: "\\[", right: "\\]", display: true}
+            ]
+        });
+    });
+</script>
