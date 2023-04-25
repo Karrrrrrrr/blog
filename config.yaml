@@ -1,5 +1,5 @@
 baseURL: https://hugo.single-one.top/
-title: Karrrrr
+title: Karrrrrr
 #minify: true
 languageCode: zh-CN
 hasCJKLanguage: true
@@ -343,14 +343,18 @@ params:
   customizeScrollbar: true
   fontFamilySiteBrand: ""
   fontFamilyMenu: ""
-  fontFamilyTitle: "'Noto Serif SC', 'EB Garamond', serif"
-  fontFamilyHeadings: "'Noto Serif SC', 'EB Garamond', serif"
-  fontFamilyCode: "'Source Code Pro', 'Noto Serif SC', monospace"
+  fontFamilyTitle: "'SourceHanSerifCN', 'EB Garamond', serif"
+  fontFamilyHeadings: "'SourceHanSerifCN', 'EB Garamond', serif"
+  fontFamilyCode: "'JetBrains Mono','Dank Mono', SourceHanSerifCN, monospace"
+#  fontFamilyTitle: "'Noto Serif SC', 'EB Garamond', serif"
+#  fontFamilyHeadings: "'Noto Serif SC', 'EB Garamond', serif"
+#  fontFamilyCode: "'Source Code Pro', 'Noto Serif SC', monospace"
   fontFamilyQuote: ""
   fontFamilyTOC: ""
   fontFamilyCaption: ""
   fontFamilyFooter: ""
-  fontFamilyBody: "'EB Garamond', 'Noto Serif SC', serif"
+  fontFamilyBody: "'SourceHanSerifCN', 'Noto Serif SC', serif"
+#  fontFamilyBody: "'EB Garamond', 'Noto Serif SC', serif"
   fontsLink: /font.css
   fontSize: 16
   tabSize: 4
@@ -364,7 +368,7 @@ params:
   deleteHrBeforeDropCap: false
   enableSmallCaps: false
   enableEmphasisPoint: true
-  enableChinesePunctuationGlyphCorrection: true
+#  enableChinesePunctuationGlyphCorrection: true
   enablePostCopyright: true
   displayPostCopyright: true
   enablePostUpdatedBadge: true

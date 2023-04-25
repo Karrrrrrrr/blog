@@ -2,6 +2,8 @@
 title: "Vite"
 date: "2023-04-25T08:42:22+08:00"
 ---
+
+
 ## 常见配置
 vite初始化完总是需要手动配置一些自定义参数,这里记录一些常用配置
 ```shell
@@ -22,6 +24,8 @@ pnpm add katex  # 可选
 ```
 
 
+
+---
 ## vite.config.ts
 ```ts
 // vite.config.ts
@@ -90,9 +94,10 @@ export default defineConfig({
 })
 ```
 
+---
 ## tsconfig.json
 
-```json5
+```json
 // tsconfig.json
 
 {
@@ -147,7 +152,7 @@ export default defineConfig({
 
 
 ## tsconfig.node.json
-```json5
+```json
 {
   "compilerOptions": {
     "composite": true,
