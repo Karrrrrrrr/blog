@@ -6,17 +6,26 @@ categories: ["代码", "前端", "Websocket","WebRTC" ]
 tags: [ "前端", "Typescript","Websocket" ]
 ---
 
+
+# Webrtc
+
+### hooks/use-rtc.ts    
 ```ts
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 
 export const useMedia = () => {
     const player = ref<HTMLVideoElement>()
     const remotePlayer = ref<HTMLVideoElement>()
     const pc = ref<RTCPeerConnection>()
     const localStream = ref<MediaStream>()
-    const ws = ref(new WebSocket('ws://localhost:8080'))
+    const ws = ref()
     const state = ref('开始通话')
     const username = (Math.random() + 1).toString(36).substring(7)
+    onMounted(() => {
+        if (!ws.value)
+            ws.value = new WebSocket('ws://localhost:8080/ws')
+
+    })
 
     const open = () => {
         initWs()
@@ -119,4 +128,126 @@ export const useMedia = () => {
         open
     }
 }
+
+```
+
+### App.vue
+
+```vue
+
+<script setup lang="ts">
+import {useMedia} from "./hooks/use-rtc";
+import {onMounted} from "vue";
+
+const {remotePlayer, player, open, state, createOffer, createAnswer, getMediaDevices} = useMedia()
+onMounted(() => {
+  open()
+})
+</script>
+
+<template>
+  <div>
+    {{ state }}
+  </div>
+  <video ref="remotePlayer" class="player" controls autoplay></video>
+  <video ref="player" class="player" controls autoplay></video>
+  <div>
+    <button @click="createOffer"> create offer</button>
+  </div>
+  <div>
+    <button @click="createAnswer"> create ans</button>
+  </div>
+</template>
+
+<style scoped>
+.player {
+  width: 500px;
+  height: 300px;
+  outline: 1px solid black;
+}
+</style>
+
+```
+
+
+### app.go 
+
+```go
+package main
+
+import (
+	"github.com/gin-gonic/gin"
+	"s/ws"
+)
+
+func main() {
+	var app = gin.Default()
+
+	ws.InitWs(app)
+
+	app.Run(":8080")
+
+}
+
+
+```
+
+### ws/ws.go
+
+```go
+package ws
+
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"log"
+	"net/http"
+)
+
+type Room struct {
+	RoomId string `json:"roomId,omitempty"`
+}
+type ConnectPool map[*websocket.Conn]bool
+
+var mp = ConnectPool{}
+
+var upgrader = websocket.Upgrader{
+	// 解决跨域问题
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
+} // use default options
+
+func ws(c *gin.Context) {
+	ws, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		return
+	}
+	mp[ws] = true
+	defer func() {
+		ws.Close()
+		delete(mp, ws)
+	}()
+	for {
+		mt, message, err := ws.ReadMessage()
+		fmt.Println(string(message))
+		if err != nil {
+			log.Println("write:", err)
+			break
+		}
+		for conn := range mp {
+			if conn == ws {
+				continue
+			}
+			conn.WriteMessage(mt, message)
+		}
+	}
+}
+
+func InitWs(app *gin.Engine) {
+	app.GET("/ws", ws)
+}
+
+
 ```
