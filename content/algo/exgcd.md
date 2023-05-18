@@ -80,7 +80,7 @@ ll exgcd(ll a, ll b, ll &x, ll &y) {
 ```cpp
 ll inv(ll a, ll mod) { //求a在mod下的逆元，不存在逆元返回-1 
     ll x, y;
-    ll d = ex_gcd(a, mod, x, y);
+    ll d = exgcd(a, mod, x, y);
     return d == 1 ? (x % mod + mod) % mod : -1;
 }
 ```
