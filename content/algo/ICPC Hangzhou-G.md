@@ -1,5 +1,5 @@
 ---
-title: "ICPC-杭州 G Subgraph Isomorphism"
+title: "2022 ICPC-杭州 G.Subgraph Isomorphism"
 date: "2023-05-29T17:26:51+08:00"
 ---
 
