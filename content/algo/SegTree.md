@@ -118,3 +118,67 @@ public:
 
 
 ```
+
+
+## GCD线段树(仅支持单点修改)
+```cpp
+template<typename T>
+class GCDTree {
+
+    class Node {
+    public:
+        ll val;
+        int l, r;
+    };
+    
+    vector<Node> nodes;
+    
+    ll _query(int id, int ql, int qr) {
+        if (qr < nodes[id].l || ql > nodes[id].r) return 0;
+        if (ql <= nodes[id].l && nodes[id].r <= qr) return nodes[id].val;
+        return gcd(_query(id << 1, ql, qr), _query(id << 1 | 1, ql, qr));
+    }
+
+    void _update(int id, int pos, ll val) {
+        if (pos < nodes[id].l || pos > nodes[id].r) return;
+        if (nodes[id].l == nodes[id].r) {
+            nodes[id].val += val;
+            return;
+        }
+        _update(id << 1, pos, val);
+        _update(id << 1 | 1, pos, val);
+        pushUp(id);
+    }
+
+public:
+
+    void init(int n) {
+        nodes.resize(n << 2);
+        build(1, 1, n);
+    }
+
+    void build(int id, int l, int r) {
+        nodes[id].l = l;
+        nodes[id].r = r;
+        if (l == r) return;
+
+        int mid = (l + r) >> 1;
+        build(id << 1, l, mid);
+        build(id << 1 | 1, mid + 1, r);
+    }
+
+    void pushUp(int id) {
+        nodes[id].val = gcd(nodes[id << 1].val,nodes[id << 1 | 1].val);
+    }
+    
+    void update(int pos, ll val) {
+        _update(1, pos, val);
+    }
+
+    ll query(int ql, int qr) {
+        return _query(1, ql, qr);
+    }
+};
+
+
+```
