@@ -1,6 +1,6 @@
 ---
-title: "二维树状数组-BinaryIndexedTree"
-date: "2023-03-29T17:26:51+08:00"
+title: "Please Save Pigeland"
+date: "2023-05-29T17:26:51+08:00"
 ---
 
 地址 https://codeforces.com/gym/104090/problem/M
