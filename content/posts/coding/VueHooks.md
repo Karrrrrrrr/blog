@@ -9,8 +9,7 @@ date: "2022-12-29T22:54:10+08:00"
  
 
 ## 文件选择器
-> 前端选择文件总是依赖input， 因此我们对input又爱又恨
-爱在它的实用性， 恨在它的颜值不高， 常常需要自定义
+> 前端选择文件总是依赖input， 常常需要自定义
 
 ```typescript
 import {
@@ -55,3 +54,122 @@ export const useFileSelector = () => {
 > 而是关闭的对话框，
 > 会返回null，所以需要特判
 
+
+
+## UseCharts
+
+```ts
+import { onBeforeUnmount, onMounted, ref, Ref, watch } from "vue";
+import { EChartsOption, type EChartsType, init } from "echarts";
+import { useThemeStore } from "@/store";
+import { useResizeObserver } from "@vueuse/core";
+
+export const useCharts = (data: Ref, fn: (data: any) => EChartsOption) => {
+
+    const themeStore = useThemeStore()
+    const container = ref<HTMLElement>()
+    let chartType: EChartsType | null = null
+
+    const initChart = () => {
+        if (container.value) {
+            chartType = init(container.value, themeStore.isLight ? undefined : 'dark', { renderer: 'svg' })
+        }
+
+    }
+
+    onMounted(() => {
+        initChart()
+        render()
+    })
+    const destroy = () => {
+        if (chartType) {
+            chartType.clear()
+            chartType.dispose()
+            chartType = null
+        }
+    }
+    watch(themeStore, () => {
+        destroy()
+        initChart()
+        render()
+    })
+    const resize = () => {
+        chartType?.resize()
+    }
+
+    useResizeObserver(container, () => {
+        resize()
+    })
+
+    const render = () => {
+        if (!chartType || !fn || !data?.value) return
+        const options = fn(data.value)
+        if (!options) return;
+        options.backgroundColor = ''
+        chartType.setOption(options)
+
+    }
+
+    watch(data, () => {
+        render()
+    })
+    onBeforeUnmount(() => {
+        destroy()
+    })
+    return { container }
+
+}
+```
+
+
+
+## axios 
+```ts
+import type { AxiosRequestConfig } from "axios";
+import axios from "axios";
+import { getToken } from "@/utils/authorization";
+import { useMessageBox } from "@/utils/message";
+
+interface HTTPResponse<T = any> {
+    code: number,
+    data: T,
+    message: string
+}
+
+const createRequestInstance = (baseURL: string) => {
+    const instance = axios.create({
+        baseURL, // base url for proxy
+        timeout: 1000 * 5 // wait for 5 second
+    })
+
+    const request = async <T = any>(config: AxiosRequestConfig): Promise<HTTPResponse<T>> => {
+        const msg = useMessageBox()
+
+        // const tokenKey =
+        const token = getToken()
+        // console.log(token)
+        if (!config.headers) {
+            config.headers = {}
+        }
+        if (token) {
+            // console.log('set???')
+            config.headers.Authorization = `${ token }`
+        }
+        const resp = await instance(config)
+        if (resp.data.code == 200) {
+            return resp.data
+        } else {
+            if (resp.data.message) {
+                msg?.error(resp.data.message)
+            }
+            throw (new Error(resp.data.message || 'Unexpect error'))
+        }
+    }
+    return { request }
+}
+const { request: v1 } = createRequestInstance("/api/v1")
+
+export {
+    v1
+}
+```
