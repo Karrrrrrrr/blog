@@ -207,8 +207,8 @@ private:
             pushUp(id);
             return;
         }
-// 不需要pushDown
-//        pushDown(id);
+        // 不需要pushDown
+        // pushDown(id);
         _add(id << 1, l, r, x);
         _add(id << 1 | 1, l, r, x);
         pushUp(id);
@@ -242,8 +242,7 @@ private:
 
 public:
     vector<Node> nodes;
-
-    // 初始化线段树长度, 如果需要初始化值, 那么调用带参build, 不然调用无参build
+    
     SegTree(int n) {
         nodes.resize(n << 2);
     }
