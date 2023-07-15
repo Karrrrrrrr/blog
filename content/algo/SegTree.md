@@ -182,3 +182,93 @@ public:
 
 
 ```
+
+
+## 扫描线线段树
+
+和普通线段树略有不同, 扫描线线段树只需要每个点计算一次(去重)
+```c++
+// 线段树
+template<typename T = int>
+class SegTree {
+private:
+    class Node {
+    public:
+        ll l = 0;
+        ll r = 0;
+        T val, lazy = 0;
+    };
+
+    void _add(int id, int l, int r, T x) {
+        if (nodes[id].l > r || nodes[id].r < l) return;
+
+        if (nodes[id].l >= l && nodes[id].r <= r) {
+            nodes[id].lazy += x;
+            pushUp(id);
+            return;
+        }
+// 不需要pushDown
+//        pushDown(id);
+        _add(id << 1, l, r, x);
+        _add(id << 1 | 1, l, r, x);
+        pushUp(id);
+    }
+
+    ll _query(int id, int l, int r) {
+        if (nodes[id].l > r || nodes[id].r < l) return 0;
+        if (nodes[id].l >= l && nodes[id].r <= r) {
+            return nodes[id].val;
+        }
+        return _query(id << 1, l, r) + _query(id << 1 | 1, l, r);
+    }
+
+    void pushUp(int id) {
+        if (nodes[id].lazy > 0) {
+            nodes[id].val = nodes[id].r - nodes[id].l + 1;
+        } else {
+            // 这里必须特判, 不然可能会re
+            // 叶子节点的时候, id*2会越界
+            if (nodes[id].l != nodes[id].r) {
+                nodes[id].val = nodes[id << 1].val + nodes[id << 1 | 1].val;
+            } else {
+                nodes[id].val = 0;
+            }
+        }
+    }
+
+    void pushDown(int id) {
+        return;
+    }
+
+public:
+    vector<Node> nodes;
+
+    // 初始化线段树长度, 如果需要初始化值, 那么调用带参build, 不然调用无参build
+    SegTree(int n) {
+        nodes.resize(n << 2);
+    }
+
+    void build(int id, int l, int r) {
+        nodes[id].l = l;
+        nodes[id].r = r;
+        nodes[id].val = 0;
+
+        if (l == r) {
+            return;
+        }
+        int mid = (l + r) >> 1;
+        build(id << 1, l, mid);
+        build(id << 1 | 1, mid + 1, r);
+    }
+
+    void add(int left, int right, T x) {
+        _add(1, left, right, x);
+    }
+
+
+    T query(int left, int right) {
+        return _query(1, left, right);
+    }
+};
+
+```
