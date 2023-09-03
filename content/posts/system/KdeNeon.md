@@ -56,6 +56,7 @@ sudo apt install libqt5waylandclient5-dev
 ### 某
 ```text
 https://bigairport.date/api/v1/client/subscribe?token=5d1bdb5b98bcaea86041b1f7db353066
+https://sub-xsus.com/api/v1/client/subscribe?key=90f1e50f1b70fcae426c785b0939892c
 ```
 ### yakuake
 ```shell
