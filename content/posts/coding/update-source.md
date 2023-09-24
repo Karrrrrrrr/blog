@@ -7,7 +7,9 @@ tags: ["CDN"]
  
 
 ## Vite加速
-<a href="/posts/coding/vite-cdn">点击此处</a>
+<div>
+    <a href="/posts/coding/vite-cdn" style="border-bottom: 1px solid skyblue; color: deepskyblue">传送门</a>
+</div>
 
 
 ## maven 
