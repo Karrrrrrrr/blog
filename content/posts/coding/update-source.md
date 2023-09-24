@@ -53,14 +53,60 @@ allprojects {
     }
 }
 ```
+### gradle of SpringBoot
+```gradle 
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.1.4'
+    id 'io.spring.dependency-management' version '1.1.3'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    sourceCompatibility = '17'
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    maven { url 'https://maven.aliyun.com/repository/google' }
+    maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
+    maven { url 'https://maven.aliyun.com/repository/public' }
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+```
+
+
 
 ## pip 
-### 阿里云
+
+### aliyun
 ```shell    
 pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 pip config set install.trusted-host mirrors.aliyun.com
 ```
-### 清华
+
+### tsinghua
 ```shell
 pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 pip config set install.trusted-host pypi.tuna.tsinghua.edu.cn
@@ -114,7 +160,7 @@ go env -w https://goproxy.cn,direct
 git clone --config "http.proxy='http://127.0.0.1:{port}'" --depth=1 ... 
 ```
 
-## cli代理设置
+## set proxy of cli
 一般来说, 程序都会读取环境变量中 "http_proxy"和"https_proxy"作为代理服务器
 ### powershell
 ```powershell
@@ -123,7 +169,7 @@ $env:http_proxy=""
 ### cmd
 ```shell
 set https_proxy=""
-# 读取 echo %https_proxy%
+# read echo %https_proxy%
 ```
 ### bash 
 ```shell
@@ -137,10 +183,10 @@ pnpm config set https-proxy ""
 
 
 
-## 一些官方镜像站
-### 阿里云
+## Any Mirrors
+### Aliyun
 https://developer.aliyun.com/mirror/
-### 清华
+### Tsinghua
 https://mirrors.tuna.tsinghua.edu.cn/
-### 腾讯
+### Tencent
 https://mirrors.tencent.com/
