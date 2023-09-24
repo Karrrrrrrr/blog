@@ -139,7 +139,7 @@ pnpm config set https-proxy ""
 
 ## 一些官方镜像站
 ### 阿里云
-https://developer.aliyun.com/mirror/?spm=a2c6h.13651102.0.0.568d1b11MAxjf9&serviceType=mirror
+https://developer.aliyun.com/mirror/
 ### 清华
 https://mirrors.tuna.tsinghua.edu.cn/
 ### 腾讯
