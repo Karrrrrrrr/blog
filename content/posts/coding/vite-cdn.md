@@ -1,9 +1,8 @@
 ---
-title: "CSS实现正方形展示图片"
-date: "2022-05-25T00:52:09+08:00"
-cover: "https://pic4.zhimg.com/80/c3edefc8bdd82043a247b2c05a706527_720w.jpg"
-categories: ["代码", "前端", "CSS" ]
-tags: [ "前端", "CSS" ]
+title: "vite-cdn"
+date: "2023-09-24T21:00:00+08:00"
+categories: ["代码", "前端", "CSS", "CDN" ]
+tags: [ "前端", "CSS", "CDN"]
 ---
 
 # vite-cdn 
