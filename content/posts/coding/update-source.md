@@ -184,6 +184,14 @@ pnpm config set https-proxy ""
 ```
 
 
+## Alpine 
+
+```shell
+sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+```
+
+
 
 ## Any Mirrors
 ### Aliyun
