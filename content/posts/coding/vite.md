@@ -185,3 +185,81 @@ declare module '*.vue' {
     export default component
 }
 ```
+
+
+
+```ts
+
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import { Plugin as importToCDN } from 'vite-plugin-cdn-import'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+    plugins: [
+        vue(),
+        importToCDN({
+            modules: [
+                {
+                    name: 'vue',
+                    var: 'Vue',
+                    path: 'https://cdn.staticfile.org/vue/3.3.4/vue.global.min.js'
+                }, {
+                    name: 'vue-router',
+                    var: 'VueRouter',
+                    path: 'https://cdn.staticfile.org/vue-router/4.2.5/vue-router.global.min.js'
+                },
+                {
+                    name: 'vue-demi',
+                    var: 'VueDemi',
+                    path: 'https://cdn.staticfile.org/vue-demi/0.14.6/index.iife.min.js'
+                },
+                {
+                    name: 'echarts',
+                    var: 'echarts',
+                    path: 'https://cdn.staticfile.org/echarts/5.4.3/echarts.min.js'
+                },
+                {
+                    name: 'naive-ui',
+                    var: 'naive',
+                    path: 'https://cdn.staticfile.org/naive-ui/2.34.4/index.prod.min.js'
+                },
+                {
+                    name: 'gsap',
+                    var: 'gsap',
+                    path: 'https://cdn.staticfile.org/gsap/3.12.2/gsap.min.js'
+                },
+                {
+                    name: 'pinia',
+                    var: 'Pinia',
+                    path: 'https://cdn.staticfile.org/pinia/2.1.6/pinia.iife.prod.min.js'
+                },
+            ]
+        })
+        // AutoImport({
+        //     // 这里除了引入 vue 以外还可以引入pinia、vue-router、vueuse等，
+        //     // 甚至你还可以使用自定义的配置规则，见 https://github.com/antfu/unplugin-auto-import#configuration
+        //     imports: ['vue', 'vue-router', 'pinia', '@vueuse/core'],
+        //     dts: './src/auto-imports.d.ts',
+        //     // 第三方组件库的解析器
+        // }),
+        // Components({
+        //     // dirs 指定组件所在位置，默认为 src/components
+        //     // 可以让我们使用自己定义组件的时候免去 import 的麻烦
+        //     dirs: ['src/components/'],
+        //     dts: './src/auto-components.d.ts',
+        //     // 配置需要将哪些后缀类型的文件进行自动按需引入
+        //     extensions: ['vue', 'md'],
+        //     // 解析的 UI 组件库，这里以 Element Plus 和 Ant Design Vue 为例
+        //     resolvers: [NaiveUiResolver()],
+        // }),
+    ],
+    // alias: {}
+    resolve: {
+        alias: {
+        }
+    }
+})
+
+
+```

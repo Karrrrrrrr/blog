@@ -54,7 +54,7 @@ sudo systemctl restart docker
 docker pull ..... 
 ```
 
-操作完可能需要改回来 否则失去代理后可能影响正常运行 只需要删除该文件再次重启即可
+操作完可能需要改回来 否则失去代理后影响正常运行 只需要删除该文件再次重启即可
 
 ```shell
 rm /etc/systemd/system/docker.service.d

@@ -160,3 +160,8 @@ sudo vim /etc/fstab
 UUID="86104B60104B5679"                   /home/kar/Data        ntfs defaults 0 0 
 ```
 
+
+
+### 关于ssh免密码连不上这回事
+
+https://www.cnblogs.com/qyjzjw/p/16173016.html
