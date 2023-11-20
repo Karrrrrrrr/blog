@@ -159,3 +159,52 @@ COPY --from=builder /usr/share/postgresql/15/tsearch_data/rules.utf8.ini        
 
 CMD ["postgres"]
 ```
+
+
+## 2023/11/20更新 postgres16
+
+```
+FROM postgres:16 as builder
+
+RUN echo  \
+"deb http://mirrors.ustc.edu.cn/debian stable main contrib non-free\n \
+deb-src http://mirrors.ustc.edu.cn/debian stable main contrib non-free\n \
+deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free\n \
+deb-src http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free\n \
+deb http://mirrors.ustc.edu.cn/debian stable-proposed-updates main contrib non-free\n \
+deb-src http://mirrors.ustc.edu.cn/debian stable-proposed-updates main contrib non-free" > /etc/apt/sources.list  \
+    && rm -rf /etc/apt/sources.list.d/debian.sources  # 禁用官方源,提速 \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends bzip2 gcc make libc-dev postgresql-server-dev-$PG_MAJOR wget  unzip ca-certificates openssl  \
+    && rm -rf /var/lib/apt/lists/*   \
+    && wget -q -O - "http://minio-cdn.single-one.top/public/scws-1.2.3.tar.bz2" | tar xjf -   \
+    && wget -O zhparser.zip "http://minio-cdn.single-one.top/public/master.zip" \
+    && unzip zhparser.zip \
+    && cd scws-1.2.3 \
+    && ./configure   \
+    && make install \
+    && cd /zhparser-master \
+    && SCWS_HOME=/usr/local make  \
+    && make install
+
+FROM postgres:16-alpine3.18
+COPY --from=builder /usr/lib/postgresql/16/lib/bitcode/zhparser                             /usr/local/lib/postgresql/bitcode/zhparser/
+COPY --from=builder /usr/lib/postgresql/16/lib/bitcode/zhparser/zhparser.bc                 /usr/local/lib/postgresql/bitcode/zhparser/zhparser.bc
+COPY --from=builder /usr/lib/postgresql/16/lib/zhparser.so                                  /usr/local/lib/postgresql/zhparser.so
+COPY --from=builder /usr/share/postgresql/16/extension/zhparser--unpackaged--1.0.sql        /usr/local/share/postgresql/extension/zhparser--unpackaged--1.0.sql
+COPY --from=builder /usr/share/postgresql/16/extension/zhparser--2.1--2.2.sql               /usr/local/share/postgresql/extension/zhparser--2.1--2.2.sql
+COPY --from=builder /usr/share/postgresql/16/extension/zhparser--1.0--2.0.sql               /usr/local/share/postgresql/extension/zhparser--1.0--2.0.sql
+COPY --from=builder /usr/share/postgresql/16/extension/zhparser--2.1.sql                    /usr/local/share/postgresql/extension/zhparser--2.1.sql
+COPY --from=builder /usr/share/postgresql/16/extension/zhparser--2.0--2.1.sql               /usr/local/share/postgresql/extension/zhparser--2.0--2.1.sql
+COPY --from=builder /usr/share/postgresql/16/extension/zhparser--1.0.sql                    /usr/local/share/postgresql/extension/zhparser--1.0.sql
+COPY --from=builder /usr/share/postgresql/16/extension/zhparser.control                     /usr/local/share/postgresql/extension/zhparser.control
+COPY --from=builder /usr/share/postgresql/16/extension/zhparser--2.0.sql                    /usr/local/share/postgresql/extension/zhparser--2.0.sql
+COPY --from=builder /usr/share/postgresql/16/tsearch_data/dict.utf8.xdb                     /usr/local/share/postgresql/tsearch_data/dict.utf8.xdb
+COPY --from=builder /usr/share/postgresql/16/tsearch_data/rules.utf8.ini                    /usr/local/share/postgresql/tsearch_data/rules.utf8.ini
+COPY --from=builder /usr/local/lib/libscws.la                                               /lib/libscws.la
+COPY --from=builder /usr/local/lib/libscws.so.1.1.0                                         /lib/libscws.so.1.1.0
+RUN ln -s /lib/libscws.so.1.1.0 /lib/libscws.so.1  \
+    && ln -s /lib/libscws.so.1.1.0 /lib/libscws.so  \
+    && echo "CREATE EXTENSION pg_trgm;CREATE EXTENSION zhparser;CREATE TEXT SEARCH CONFIGURATION chinese_zh (PARSER = zhparser);ALTER TEXT SEARCH CONFIGURATION chinese_zh ADD MAPPING FOR n,v,a,i,e,l,t WITH simple;" > /docker-entrypoint-initdb.d/init-zhparser.sql
+
+``` 
