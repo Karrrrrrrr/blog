@@ -3,7 +3,7 @@ title: "C++ 网络编程"
 date: 2024-01-14T19:00:00+08:00
 ---
 
-## 安卓新建项目
+## C++ Socket网络编程
 ### Server 
 ```cpp
 #include <iostream>
@@ -55,7 +55,7 @@ int main() {
     serverAddr.sin_port = htons(PORT);
 
     // 绑定套接字
-    if (bind(serverSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
+    if (bind(serverSocket, (sockaddr *)&serverAddr, sizeof(serverAddr)) == -1) {
         std::cerr << "Error binding server socket" << std::endl;
         close(serverSocket);
         exit(EXIT_FAILURE);
@@ -74,7 +74,7 @@ int main() {
         // 接受客户端连接
         sockaddr_in clientAddr;
         socklen_t clientAddrLen = sizeof(clientAddr);
-        int clientSocket = accept(serverSocket, (struct sockaddr *)&clientAddr, &clientAddrLen);
+        int clientSocket = accept(serverSocket, (sockaddr *)&clientAddr, &clientAddrLen);
         if (clientSocket == -1) {
             std::cerr << "Error accepting client connection" << std::endl;
             continue;
@@ -115,30 +115,6 @@ using namespace std;
 constexpr int BUFFER_SIZE = 1024;
 constexpr int PORT = 8080;
 const char *SERVER_IP = "127.0.0.1";  // 服务器的IP地址，这里使用本地回环地址
-
-struct Socket {
-    int sock;
-
-    Socket() {
-        sock = socket(AF_INET, SOCK_STREAM, 0);
-    }
-
-    template<class T>
-    auto write(const T &buf) {
-        return ::send(sock, buf.data(), (buf).size(), 0);
-    }
-
-    template<class T>
-    auto read(T &buf) {
-        return recv(sock, buf.data(), buf.size(), 0);
-    }
-};
-
-
-Socket *newSocket() {
-    return new Socket();
-}
-
 
 int main() {
     // 创建客户端套接字
