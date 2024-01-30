@@ -15,30 +15,33 @@ firefox正常
 以下是问题代码
 
 ```python
-from flask import Flask,request,render_template
-from  geventwebsocket.websocket import WebSocket,WebSocketError
-from  geventwebsocket.handler import WebSocketHandler
-from  gevent.pywsgi import WSGIServer
+import time
+
+from flask import Flask, request, render_template
+from geventwebsocket.websocket import WebSocket, WebSocketError
+from geventwebsocket.handler import WebSocketHandler
+from gevent.pywsgi import WSGIServer
 
 import json
 
 app = Flask(__name__)
-user_socket_dict={}
+user_socket_dict = {}
+
 
 @app.route('/ws')
 def ws():
-    user_socket=request.environ.get("wsgi.websocket")
+    user_socket = request.environ.get("wsgi.websocket")
     if not user_socket:
         return "请以WEBSOCKET方式连接"
-
+    username = str(int(time.time()) * 100000)
     while True:
         try:
             user_msg = user_socket.receive()
-            for user_name,u_socket in user_socket_dict.items():
+            for user_name, u_socket in user_socket_dict.items():
 
-                who_send_msg={
-                    "send_user":username,
-                    "send_msg":user_msg
+                who_send_msg = {
+                    "send_user": username,
+                    "send_msg": user_msg
                 }
 
                 if user_socket == u_socket:
@@ -48,9 +51,11 @@ def ws():
         except WebSocketError as e:
             user_socket_dict.pop(username)
 
+
 if __name__ == '__main__':
-    http_serve=WSGIServer(("0.0.0.0",5000),app,handler_class=WebSocketHandler)
+    http_serve = WSGIServer(("0.0.0.0", 5000), app, handler_class=WebSocketHandler)
     http_serve.serve_forever()
+
 ```
 
 ### 推测
@@ -63,16 +68,17 @@ Websocket只存在于before_request。
 抽离出websocket处理函数， 在before_request hook中调用处理函数， 并且过滤普通请求
 
 ```python
-from flask import  Flask ,request,render_template
-from  geventwebsocket.websocket import WebSocket,WebSocketError
-from  geventwebsocket.handler import WebSocketHandler
-from  gevent.pywsgi import WSGIServer
+from flask import Flask, request, render_template
+from geventwebsocket.websocket import WebSocket, WebSocketError
+from geventwebsocket.handler import WebSocketHandler
+from gevent.pywsgi import WSGIServer
 
 import json
 
 app = Flask(__name__)
 # user_socket_dict={}
 user_socket_set = set()
+
 
 def websocket_handler(user_socket):
     s.add(user_socket)
@@ -81,7 +87,6 @@ def websocket_handler(user_socket):
             user_msg = user_socket.receive()
             for u_socket in user_socket_dict.items():
 
-              
                 if user_socket == u_socket:
                     continue
                 u_socket.send(user_msg)
@@ -91,17 +96,72 @@ def websocket_handler(user_socket):
             s.remove(user_socket)
 
 
-
 @app.before_request
 def before():
-    user_socket=request.environ.get("wsgi.websocket")
+    user_socket = request.environ.get("wsgi.websocket")
     if user_socket:
         websocket_handler(user_socket)
         return
 
-    
+
 if __name__ == '__main__':
-    http_serve=WSGIServer(("0.0.0.0",5000),app,handler_class=WebSocketHandler)
+    http_serve = WSGIServer(("0.0.0.0", 5000), app, handler_class=WebSocketHandler)
     http_serve.serve_forever()
 ```
 
+## 2024/1/31 
+
+重新观察了现象, 发现
+
+1. websocket只存在于before_request
+2. 浏览器端能正常显示websocket 101,但是马上会断开
+3. 经过调试,得: flask其实报了400错误, 但是没有打印到控制台
+
+阅读源码之后, 发现是werkzurg底层修改了一些参数, 使校验更严格, 导致原本能正常连接的websocket变成400错误
+
+### 解决方案如下
+给 ```@app.route('/ws', websocket=True)```添加额外参数
+```python
+
+import time
+
+from flask import Flask, request, render_template
+from geventwebsocket.websocket import WebSocket, WebSocketError
+from geventwebsocket.handler import WebSocketHandler
+from gevent.pywsgi import WSGIServer
+
+import json
+
+app = Flask(__name__)
+user_socket_dict = {}
+
+
+@app.route('/ws', websocket=True)
+def ws():
+    user_socket = request.environ.get("wsgi.websocket")
+    if not user_socket:
+        return "Method Not Allowed"
+    username = str(int(time.time()) * 100000)
+    while True:
+        try:
+            user_msg = user_socket.receive()
+            for user_name, u_socket in user_socket_dict.items():
+
+                who_send_msg = {
+                    "send_user": username,
+                    "send_msg": user_msg
+                }
+
+                if user_socket == u_socket:
+                    continue
+                u_socket.send(json.dumps(who_send_msg))
+
+        except WebSocketError as e:
+            user_socket_dict.pop(username)
+
+
+if __name__ == '__main__':
+    http_serve = WSGIServer(("0.0.0.0", 5000), app, handler_class=WebSocketHandler)
+    http_serve.serve_forever()
+
+```
