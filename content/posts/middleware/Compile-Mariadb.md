@@ -1,5 +1,5 @@
 ---
-date: 2024-04-28T17:00:00+08:00
+date: 2024-04-23T17:00:00+08:00
 title: 编译一个 Mariadb
 categories: ["代码", "Mariadb", "中间件"]
 tags: ["Mariadb","编译","数据库"]
