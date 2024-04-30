@@ -38,10 +38,10 @@ ALTER TEXT SEARCH CONFIGURATION chinese_zh ADD MAPPING FOR n,v,a,i,e,l WITH simp
 
 
 测试插件是否安装成功SQL：
-```postgresql
+```sql
 select ts_debug('chinese_zh', '白垩纪是地球上海陆分布和生物界急剧变化、火山活动频繁的时代');
 ```
-```postgresql
+```sql
 CREATE TEXT SEARCH CONFIGURATION chinese_parser (PARSER = zhparser);
 ALTER TEXT SEARCH CONFIGURATION chinese_parser ADD MAPPING FOR n,v,a,i,e,l,j WITH simple;
 
