@@ -50,6 +50,7 @@ apt install cmake make g++ ninja-build zlib1g-dev libboost-dev  libzstd-dev  lib
 apt install zlib1g-dev
 ```
 
+报错日志
 ```
 CMake Error at /usr/share/cmake-3.25/Modules/CMakeTestCCompiler.cmake:70 (message):
   The C compiler
@@ -86,6 +87,7 @@ Call Stack (most recent call first):
 apt install g++
 ```
 
+报错日志
 ```
 CMake Error at CMakeLists.txt:14 (project):
   The CMAKE_CXX_COMPILER:
@@ -102,11 +104,12 @@ CMake Error at CMakeLists.txt:14 (project):
 
 
 #### 缺少boost库
-
+执行
 ```shell
 apt install libboost-dev
 ```
 
+报错日志
 ```
 CMake Error at /usr/share/cmake-3.25/Modules/FindPackageHandleStandardArgs.cmake:230 (message):
   Could NOT find Boost (missing: Boost_INCLUDE_DIR context system) (Required
@@ -119,11 +122,12 @@ Call Stack (most recent call first):
 ```
 
 #### 缺少boostcontext库
-
+执行
 ```shell
 apt install libboost-context-dev
 ```
 
+报错日志
 ```
 CMake Error at /usr/lib/x86_64-linux-gnu/cmake/Boost-1.74.0/BoostConfig.cmake:141 (find_package):
   Could not find a package configuration file provided by "boost_context"
@@ -156,12 +160,13 @@ CMake Error at src/server/CMakeLists.txt:72 (find_library):
   libzstdstatic.a, zstd
 
 ```
-
+执行
 ```shell
 apt install openssl libssl-dev
 ```
 
 
+报错日志
 
 ```
 CMake Error at helio/cmake/internal.cmake:144 (target_link_libraries):
@@ -215,6 +220,7 @@ Call Stack (most recent call first):
 apt install dh-autoreconf
 ```
 
+报错日志
 ```
 CMake Error at /home/vagrant/dragonfly/build-release/third_party/src/gperf_project-stamp/gperf_project-patch-Release.cmake:49 (message):
   Command failed: No such file or directory
