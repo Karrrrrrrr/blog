@@ -97,7 +97,20 @@ make install
 
 
 ```shell
-apt install -y clang++ libgmp-dev libmpfr-dev libmpc-dev make
+cat << EOF > /etc/apt/sources.list
+# 默认注释了源码仓库，如有需要可自行取消注释
+deb http://mirrors.ustc.edu.cn/debian bookworm main contrib non-free non-free-firmware
+deb-src http://mirrors.ustc.edu.cn/debian bookworm main contrib non-free non-free-firmware
+deb http://mirrors.ustc.edu.cn/debian bookworm-updates main contrib non-free non-free-firmware
+deb-src http://mirrors.ustc.edu.cn/debian bookworm-updates main contrib non-free non-free-firmware
+
+# backports 软件源，请按需启用
+deb http://mirrors.ustc.edu.cn/debian bookworm-backports main contrib non-free non-free-firmware
+deb-src http://mirrors.ustc.edu.cn/debian bookworm-backports main contrib non-free non-free-firmware
+EOF
+
+apt update 
+apt install -y clang libgmp-dev libmpfr-dev libmpc-dev make
 wget http://ftp.tsukuba.wide.ad.jp/software/gcc/releases/gcc-13.2.0/gcc-13.2.0.tar.gz
 tar -xzvf gcc-13.2.0.tar.gz
 cd gcc-13.2.0
