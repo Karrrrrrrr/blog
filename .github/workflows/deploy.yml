@@ -20,7 +20,7 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: '0.100.2'
+          hugo-version: '0.128.2'
           # 是否启用 hugo extend
           extended: true
 
@@ -34,3 +34,4 @@ jobs:
         with:
           github_token: ${{ secrets.TOKEN }}
           publish_dir: ./public
+
