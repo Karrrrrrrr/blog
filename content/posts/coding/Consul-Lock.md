@@ -1,8 +1,12 @@
 ---
 title: "Consul Lock"
-date: "2024-07-07T02:00:00+08:00"
----
 
+date: "2024-07-07T02:00:00+08:00"
+
+categories: ["代码", "分布式锁", "consul" ]
+
+tags: ["consul", "分布式锁" ]
+---
 # Consul分布式锁
 ## Golang 代码
 ```go
