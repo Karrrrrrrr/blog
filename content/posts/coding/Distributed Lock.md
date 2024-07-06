@@ -6,6 +6,7 @@ date: 2024-01-14T20:00:00+08:00
 ## 分布式锁
 
 ### Redis
+<a href="/posts/coding/redis-lock/">Redis分布式锁</a>
 
 1. 使用 ```set key value [NX|XX] [GET] [EX seconds|PX milliseconds|EXAT unix-time-seconds|PXAT unix-time-milliseconds|KEEPTTL]``` ，同时设置一个过期时间， 如果服务中途宕机，有过期时间就可以避免死锁
 2. 对于一个耗时任务， 如果服务还没有结束，锁提前失效， 会导致服务异常。 启动一个子线程，在任务完成之前， 每隔一段时间续签
@@ -19,6 +20,8 @@ date: 2024-01-14T20:00:00+08:00
 只能通过自旋来实现阻塞抢锁, 实时性上不太好
 
 ### Etcd
+
+<a href="/posts/coding/etcd-distributed-lock">etcd分布式锁</a>
 
 etcd实现分布式锁与redis大有不同, etcd通过回调的方式，避免了不必要的自旋
 
@@ -35,7 +38,8 @@ etcd实现分布式锁与redis大有不同, etcd通过回调的方式，避免�
 
 缺点：有额外学习成本(但是不难)
 
-### Consul / Zookeeper
+### Consul
+<a href="/posts/coding/consul-lock">Consul分布式锁</a>
 
+###  Zookeeper
 太臃肿， 不必要
-

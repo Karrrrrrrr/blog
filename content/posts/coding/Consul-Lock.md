@@ -1,5 +1,5 @@
 ---
-title: "Consul Lock"
+title: "Consul 分布式锁"
 
 date: "2024-07-07T02:00:00+08:00"
 
