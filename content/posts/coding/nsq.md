@@ -3,7 +3,7 @@
 title: "Python NSQ"
 date: 2024-08-10T00:19:18+08:00
 categories: ["代码","NSQ" ]
-tags: ["Python","""消息队列" ,"NSQ"]
+tags: ["Python","消息队列" ,"NSQ"]
 
 ---
 
