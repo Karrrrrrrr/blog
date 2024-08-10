@@ -50,6 +50,7 @@ unzip analysis-ik.zip -d plugins/ik
 ```
 
 # 总结
+下面的配置可以看情况改
 ```shell
 rm -rf config 
 rm -rf data
@@ -80,8 +81,8 @@ services:
       - discovery.type=single-node
       - TZ=Asia/Shanghai
     ports:
-      - "9201:9200"
-      - "9301:9300"
+      - "9200:9200"
+      - "9300:9300"
 
     volumes:
       - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
