@@ -13,7 +13,7 @@ tags: ["数据库"]
 
 值得一提的是, gorm和jdbc的参数都是在服务端处理的, psycopg2的参数是在客户端处理的, 所以仍有可能存在注入的风险
 ### gorm
-```
+```go
 var user model.User
 db.Where("id = ?", 1).Find(&user)
 ```
@@ -29,7 +29,7 @@ cur.execute('select * from user where id = %s', 1)
 
 
 ## 预编译
-预编译的原理: 向发送一段sql, 并且携带一个id, 后续就可以通过id来复用这段sql, 减少IO和sql解析的开销(其实就和声明函数有点类似,后续只需要发送函数名和参数即可调用)。
+预编译的原理: 向服务器发送一段sql, 并且携带一个id, 后续就可以通过id来复用这段sql, 减少IO和sql解析的开销(其实就和声明函数有点类似,后续只需要发送函数名和参数即可调用)。
 
 对于java而言, 下面这段代码就非常常见, 甚至是每个java初学者都写过的。
 ```java
@@ -47,7 +47,7 @@ PreparedStatement preparedStatement = conn.prepareStatement(sql)
 ### 报文
 下面这段信息由抓包得来,当我们发起一个sql预编译请求,报文如下
 ```text
-P[len]stmtcache_16be073dcd7869a2826420ad964c154767aa4547a09ffbc8 SELECT * FROM "users" WHERE id in ($1,$2,$3,$4,$5)   D   @Sstmtcache_16be073dcd7869a2826420ad964c154767aa4547a09ffbc8 S   
+P[len]stmtcache_16be073dcd7869a2826420ad964c154767aa4547a09ffbc8 SELECT * FROM "users" WHERE id in ($1,$2,$3,$4,$5)   D   @Sstmtcache_16be073dcd7869a2826420ad964c154767aa4547a09ffbc8 S   
 ```
 随后向服务端发送调用请求
 ```text
