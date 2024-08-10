@@ -57,6 +57,7 @@ rm -rf data
 
 mkdir -p config
 mkdir -p data 
+chmod -R 777 data 
 
 version="8.12.2"
 cat > config/elasticsearch.yml << EOF
@@ -75,7 +76,7 @@ cat > docker-compose.yml << EOF
 version: '3.8'
 services:
   es:
-    container_name: es
+    container_name: es-ik
     image: swr.cn-north-4.myhuaweicloud.com/kar/elasticsearch:${version}
     environment:
       - discovery.type=single-node
@@ -87,7 +88,7 @@ services:
     volumes:
       - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./data:/usr/share/elasticsearch/data
-      - ./plugins:/usr/share/elasticsearch/plugins
+#      - ./plugins:/usr/share/elasticsearch/plugins
 #    networks:
 #      - proxy
 #networks:
@@ -102,4 +103,27 @@ mkdir -p plugins/ik
 unzip analysis-ik-${version}.zip -d plugins/ik
 rm analysis-ik-${version}.zip
 docker-compose up -d
+```
+
+
+### 内置ik
+下面这个容器内置ik, 可以跳过手动安装ik分词器的过程,其他流程不变 
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  es:
+    container_name: es-ik
+    image: swr.cn-north-4.myhuaweicloud.com/kar/elasticsearch:ik-8.12.2
+    environment:
+      - discovery.type=single-node
+      - TZ=Asia/Shanghai
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+    volumes:
+      - ./config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./data:/usr/share/elasticsearch/data
+#      - ./plugins:/usr/share/elasticsearch/plugins
 ```
