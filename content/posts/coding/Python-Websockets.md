@@ -14,7 +14,7 @@ from websockets import (
     serve as serve_websocket,
     ConnectionClosedOK
 )
-
+locker = asyncio.Lock()
 mp = {}
 
 
@@ -22,17 +22,23 @@ async def handle_service(sock: WebSocketServerProtocol):
     ip = sock.remote_address[0]
     port = sock.remote_address[1]
     addr = f'{ip}:{port}'
+    locker.acquire()
     mp[addr] = sock
+    locker.release()
     try:
         while 1:
             data = await sock.recv()
             print(data)
+            locker.acquire()
             for e in mp:
                 ws = mp[e]
                 await ws.send(data)
+            locker.release()
     except ConnectionClosedOK as e:
         print('any one exit...', addr)
+        locker.acquire()
         mp.pop(addr)
+        locker.release()
 
 
 async def handler(ws: WebSocketServerProtocol, path: str):
