@@ -66,7 +66,7 @@ tls:
 | 中间件    | 目的 |    区域 |
 |  ----   | ----  | --- | 
 | 添加前缀 (AddPrefix)  |    添加路径前缀 | 路径修改器 | 
-| 基本认证 (BasicAuth)  |    添加基本 | 身份验证 安全、认证  | 
+| 基本认证 (BasicAuth)  |    添加基本 | 身份验证 安全、认证 | 
 | 缓冲 (Buffering)  |    缓冲请求 | /响应 请求生命周期 |
 | 链 (Chain)  |    组合多个中间件 |    杂项 |
 | 断路器 (CircuitBreaker)  |    防止调用不健康的服务 |    请求生命周期 |
@@ -75,7 +75,7 @@ tls:
 | 摘要认证 (DigestAuth)  |    添加摘要身份验证 |    安全、认证 |
 | 错误 (Errors)     |    定义自定义错误页面 |    请求生命周期 |
 | 转发验证 (ForwardAuth)           |    代表身份验证 |    安全、认证 |
-| 标头 (Headers)  |    添加          | /更新标题 安全 |
+| 标头 (Headers)  |    添加          | 更新标题 安全 |
 | IP白名单 (IPWhiteList)              |    限制允许的客户端 |  IP 安全、请求生命周期 |
 | 飞行请求 (InFlightReq)           |    限制同时连接的数量 |    安全、请求生命周期 |
 | 通过TLSClientCert (PassTLSClientCert)  |    在标头中添加客户端证书 |    安全 |
