@@ -1,8 +1,8 @@
 ---
 title: "Python 原生Websocket"
 date: "2024-05-17T15:00:00+08:00"
-categories: [ "代码","Python" ]
-tags: [ "Python",Websocket" ]
+categories: ["代码","Python"]
+tags: ["Python",WebSocket"]
 ---
 
 # Python原生Websocket
