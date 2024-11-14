@@ -1,6 +1,10 @@
 ---
 title: "Docker基础组件实现原理"
 date: 2024-11-14T14:00:00+08:00
+
+categories: ["Docker"]
+
+tags: ["Docker"]
 ---
 
 # Docker基础组件实现原理

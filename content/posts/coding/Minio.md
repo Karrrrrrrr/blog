@@ -1,6 +1,10 @@
 ---
 title: "Minio"
 date: 2024-11-01T15:00:00+08:00
+
+categories: ["后端","Minio"]
+
+tags: ["后端","Minio","对象存储"]
 ---
 
 ## JS直接传文件到minio
