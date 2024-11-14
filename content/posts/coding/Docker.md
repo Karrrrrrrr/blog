@@ -48,13 +48,100 @@ docker rm
 docker network create 
 ```
 
+执行 ```docker network create``` 命令时，Docker 会创建一个虚拟网络（通常是一个虚拟桥接网络），并为其配置虚拟网卡。不同的网络驱动（如 bridge、host、overlay 等）会根据不同的需求创建不同类型的虚拟网络和网络设备。
+
+具体来说：
+
+> Bridge 网络（默认网络）：Docker 创建一个虚拟的桥接设备（如 docker0），并为每个容器创建一个虚拟网络接口（如 veth）。这些虚拟网络接口通过桥接设备相连。
+
+> Overlay 网络：Docker 使用 VXLAN 技术，在不同 Docker 主机间创建一个跨主机的虚拟网络。
+
+> Host 网络：容器共享宿主机的网络栈，不进行虚拟网卡的创建。
+
+> None 网络：容器没有网络，完全隔离。
+
+底层创建虚拟网络的步骤
+虚拟网卡：创建一个虚拟网卡（如 veth，即虚拟以太网设备），它将连接到宿主机的虚拟网桥（如 docker0）。每个容器会有一个虚拟网卡，它通过这个虚拟网卡与宿主机和其他容器进行通信。
+
+虚拟网桥（Bridge）：如果是 bridge 网络驱动，Docker 会在宿主机上创建一个虚拟网桥（通常是 docker0），然后将容器的虚拟网卡连接到这个网桥上，从而实现容器与宿主机之间的通信。
+
+路由和 NAT：Docker 会配置 iptables 规则来管理容器和宿主机之间的流量转发，确保容器可以访问外部网络，同时也确保外部网络能够通过端口映射访问容器中的服务。
+
+如何自己实现类似 Docker 网络功能
+如果想自己实现类似于 Docker 网络的功能（创建虚拟网络、虚拟网卡以及连接容器等），可以按以下步骤进行：
+
+1. 创建虚拟网卡
+在 Linux 上，可以使用 ip 命令或者通过编程接口来创建 虚拟以太网设备（veth）。veth 是一对虚拟网卡，类似于 docker 创建的容器网络接口。
+
+使用 ip link add 命令创建虚拟网卡：
+
+```bash    
+ip link add veth0 type veth peer name veth1
+```
+这条命令会创建一对虚拟网卡 veth0 和 veth1，veth0 会连接到容器的网络，而 veth1 需要连接到宿主机的虚拟网桥。
+
+2. 创建虚拟网桥（Bridge）
+使用 brctl 或者 ip 命令来创建一个虚拟网桥（如 br0）并将虚拟网卡连接到该网桥。
+
+创建网桥：
+```bash
+ip link add name br0 type bridge
+ip link set br0 up
+```
+将 veth1 接入网桥：
+
+```bash
+ip link set veth1 master br0
+```
+这样，veth1 就连接到了网桥 br0，容器就可以通过 veth0 和 veth1 进行通信。
+
+3. 配置网络地址和路由
+一旦虚拟网卡和网桥创建完成，下一步是给容器分配 IP 地址，并确保容器和宿主机之间的通信。可以使用 ip addr 和 ip route 命令来配置 IP 地址和路由。
+
+配置 veth0 的 IP 地址：
+
+```bash
+ip addr add 172.18.0.2/16 dev veth0
+ip link set veth0 up
+```
+
+配置容器网络和宿主机的网络路由：
+
+如果希望容器能够访问外部网络，需要通过 NAT（Network Address Translation）来转发流量。可以使用 iptables 或 nftables 来进行配置。Docker 通常会使用 iptables 创建 NAT 规则。
+
+4. 配置 iptables 转发规则
+配置 iptables 规则来确保宿主机和容器之间可以进行流量转发。Docker 会自动在宿主机上配置相关的 NAT 规则，使得容器能够访问外部网络，并且宿主机的端口可以映射到容器。
+
+例如，配置 NAT 转发：
+
+```bash
+iptables -t nat -A POSTROUTING -s 172.18.0.0/16 ! -d 172.18.0.0/16 -j MASQUERADE
+iptables -A FORWARD -s 172.18.0.0/16 -j ACCEPT
+iptables -A FORWARD -d 172.18.0.0/16 -j ACCEPT
+```
+这段规则确保了宿主机上的流量能够正确地转发到容器的网络，同时容器也可以访问外部网络。
+
+5. 容器间通信
+如果希望多个容器之间进行通信，可以使用类似的方法将每个容器的虚拟网卡连接到相同的虚拟网桥（如 br0）。这将允许容器之间互相访问。
+
+6. 容器连接网络
+如果希望实现容器动态加入网络的功能，可以编写一个管理工具来控制容器的网络连接。比如通过接口管理容器的 veth 网络接口，动态配置 ip addr 和 iptables 规则。
+
+完整步骤概述
+1. 使用 ip link 或 brctl 创建虚拟网卡和网桥。
+2. 配置虚拟网卡（如 veth）的 IP 地址。
+3. 配置网桥和容器之间的网络连接。
+4. 配置路由和 NAT 规则，使容器能够访问外部网络。
+5. 如果需要容器间通信，确保它们连接到相同的虚拟网桥。
+6. 配置和管理 iptables 或 nftables 规则，确保网络流量转发。
+
 
 
 ## 端口映射
 Docker 的端口映射功能是通过 iptables 来实现的。Docker 使用 iptables 进行 网络地址转换 (NAT)，以便容器的端口能够映射到宿主机的端口上，允许外部流量通过宿主机的 IP 地址和端口访问容器。
 
 端口映射实现过程
-当你运行一个 Docker 容器并指定端口映射（例如：```docker run -p 8080:80```），Docker 会使用 iptables 配置一组 NAT 规则，使宿主机的 8080 端口的流量转发到容器的 80 端口。这是通过修改 NAT 表 和 filter 表 来实现的。
+当运行一个 Docker 容器并指定端口映射（例如：```docker run -p 8080:80```），Docker 会使用 iptables 配置一组 NAT 规则，使宿主机的 8080 端口的流量转发到容器的 80 端口。这是通过修改 NAT 表 和 filter 表 来实现的。
 
 具体来说，Docker 会创建以下几种 iptables 规则：
 
