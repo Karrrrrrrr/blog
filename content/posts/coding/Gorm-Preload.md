@@ -1,5 +1,5 @@
 ---
-title: "Gorm Time"
+title: "Gorm Preload"
 date: "2025-03-30T21:00:00+08:00"
 categories: ["代码", "Golang" ]
 tags: [ "Golang" ,"GORM"]
