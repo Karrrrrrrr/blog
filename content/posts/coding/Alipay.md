@@ -24,8 +24,47 @@ date: 2025-05-01T22:00:00+08:00
 ## TradePagePay
 该方法返回一个网页支付的url, 推荐适用于桌面端网页开发
 
+```go
+func TradePagePay(money int, subject string, outTradeNo uint64) (string, error) {
+	client, err := GetClient()
+	//请求参数
+	bm := make(gopay.BodyMap)
+	// 这是必填参数, 其他的看情况填
+	bm.Set("subject", subject)
+	bm.Set("out_trade_no", outTradeNo)
+	bm.Set("total_amount", fmt.Sprintf("%.2f", float64(money)/100.0))
+	bm.Set("product_code", "FAST_INSTANT_TRADE_PAY")
+	//电脑网站支付请求
+	payUrl, err := client.TradePagePay(ctx, bm)
+	if err != nil {
+		log.Println("err:", err)
+		return "", err
+	}
+	return payUrl, err
+}
+```
+
 ## TradeWapPay
 该方法返回一个网页支付的url, 推荐适用于移动端网页开发(能自动唤醒支付宝支付)
+
+```go
+func TradeWapPay(money int, subject string, outTradeNo uint64) (string, error) {
+	client, err := GetClient()
+	//请求参数
+	bm := make(gopay.BodyMap)
+	bm.Set("subject", subject)
+	bm.Set("out_trade_no", outTradeNo)
+	bm.Set("total_amount", fmt.Sprintf("%.2f", float64(money)/100.0))
+	bm.Set("product_code", "FAST_INSTANT_TRADE_PAY")
+	//移动端网站支付请求
+	payUrl, err := client.TradeWapPay(ctx, bm)
+	if err != nil {
+		log.Println("err:", err)
+		return "", err
+	}
+	return payUrl, err
+}
+```
 
 ## 唤醒支付宝原理
 发起 alipays协议的请求, 类似如下代码
