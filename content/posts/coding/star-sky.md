@@ -132,10 +132,11 @@ date: 2025-05-02T22:00:00+08:00
             padding: 0;
             overflow: hidden;
         }
+
         #starry-sky {
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(to bottom, #000000, #1a1a4d);
+            background: linear-gradient(to bottom, #000000, rgb(21, 18, 27), rgba(32, 28, 42, 1), rgb(44, 52, 99));
             position: relative;
             overflow: hidden;
         }
@@ -144,7 +145,8 @@ date: 2025-05-02T22:00:00+08:00
             border-radius: 50%;
             position: absolute;
             box-shadow: 0 0 5px #fff;
-            transform: translateX(var(--x)) translateY(var(--y));
+            transform: translateX(calc(1px * var(--x))) translateY(calc(1px * var(--y)));
+            /*transition: transform 300ms linear;*/
         }
     </style>
 </head>
@@ -154,11 +156,14 @@ date: 2025-05-02T22:00:00+08:00
 <script>
     const starrySky = document.getElementById('starry-sky');
     const numStars = 200; // 星星数量
-    const positionMap = new Map
+    const positionMap = new WeakMap()
     const { height, width } = starrySky.getBoundingClientRect();
+    const stars = []
+
     function createStars() {
         for (let i = 0; i < numStars; i++) {
             const star = document.createElement('div');
+            stars.push(star)
             star.classList.add('star');
             // 随机初始位置
             const x = Math.random() * width;
@@ -175,33 +180,43 @@ date: 2025-05-02T22:00:00+08:00
             const randomColor = colors[Math.floor(Math.random() * colors.length)];
             star.style.backgroundColor = randomColor;
             // 随机移动速度
-            const speedX = Math.random() * 2 + 1;
-            const speedY = Math.random() * 2 + 1;
+            const speedX = (Math.random() * 2 + 1) / 3;
+            const speedY = (Math.random() * 2 + 1) / 3;
             star.dataset.speedX = speedX;
             star.dataset.speedY = speedY;
             starrySky.appendChild(star);
+            setPos(star)
         }
     }
 
+    let dt = 0
 
+    function setPos(star) {
+        let { x, y } = positionMap.get(star)
+        x += parseFloat(star.dataset.speedX) * dt;
+        y -= parseFloat(star.dataset.speedY) * dt;
+        if (x > width) x -= width
+        if (y < 0) y += height
 
+        positionMap.set(star, { x, y })
+        star.style.setProperty('--y', y);
+        star.style.setProperty('--x', x);
+    }
+    let now = performance.now()
     function moveStars() {
-        const stars = document.querySelectorAll('.star');
+        // 降低帧率不稳定导致的抖动
+        const current = performance.now()
+        dt = (current - now) / 15
+        now = current
         stars.forEach((star) => {
-            let { x, y } = positionMap.get(star)
-            x += parseFloat(star.dataset.speedX);
-            y -= parseFloat(star.dataset.speedY);
-            if (x > width) x = 0
-            if (y < 0) y = height
-
-            positionMap.set(star, { x, y })
-            star.style.setProperty('--y', y + 'px');
-            star.style.setProperty('--x', x + 'px');
+            setPos(star)
         });
+        requestAnimationFrame(moveStars)
     }
 
     createStars();
-    setInterval(moveStars, 50);
+    moveStars()
+    // setInterval(moveStars, 50);
 </script>
 </body>
 
