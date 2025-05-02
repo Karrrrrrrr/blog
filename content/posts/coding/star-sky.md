@@ -3,7 +3,7 @@ title: "js实现星空动画"
 date: 2025-05-02T22:00:00+08:00
 ---
 # 星空
-灵感来自 <a src="https://lobehub.com/zh">lobehub</a>
+灵感来自 <a href="https://lobehub.com/zh">lobehub</a>
 ![img.png](/template/img/lobehub.png)
 ## Canvas实现
 ```html
