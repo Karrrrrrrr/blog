@@ -34,14 +34,14 @@
     const starrySky = document.getElementById('starry-sky');
     const numStars = 200; // 星星数量
     const positionMap = new Map
-
+    const { height, width } = starrySky.getBoundingClientRect();
     function createStars() {
         for (let i = 0; i < numStars; i++) {
             const star = document.createElement('div');
             star.classList.add('star');
             // 随机初始位置
-            const x = Math.random() * window.innerWidth;
-            const y = Math.random() * window.innerHeight;
+            const x = Math.random() * width;
+            const y = Math.random() * height;
             positionMap.set(star, { x, y })
             // star.style.left = x + 'px';
             // star.style.top = y + 'px';
@@ -63,7 +63,7 @@
     }
 
 
-    const { height, width } = starrySky.getBoundingClientRect();
+
     function moveStars() {
         const stars = document.querySelectorAll('.star');
         stars.forEach((star) => {
