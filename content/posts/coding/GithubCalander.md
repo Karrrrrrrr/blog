@@ -342,5 +342,5 @@ date: 2025-05-08T12:00:00+08:00
 ## 预览效果
 
 <div style="width: 100%">
-    <iframe src="/template/Github Calander.html" style="width: 100%; border: 500px"></iframe>
+    <iframe src="/template/Github Calander.html" style="width: 100%; height: 500px"></iframe>
 </div>

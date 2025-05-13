@@ -8,6 +8,7 @@
             font-family: Arial, sans-serif;
             /*max-width: 900px;*/
             margin: 20px auto;
+            background: white;
         }
 
         .calendar {
@@ -135,7 +136,7 @@
     const SubmitCalender = {
         props: ['endDate', 'startDate', 'dayWidth', 'gap'],
         setup(props) {
-            const dayWidth = Number(props.dayWidth || 15);
+            const dayWidth = Number(props.dayWidth || 10);
             const gap = Number(props.gap || 4);
 
             // 结束日期是今天
