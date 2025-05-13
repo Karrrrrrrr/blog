@@ -11,7 +11,99 @@ date: 2025-05-08T12:00:00+08:00
 <head>
     <meta charset="UTF-8"/>
     <title>GitHub 风格提交日历 -- 过去一年</title>
-    <link rel="stylesheet" href="./style.css">
+    <style>
+        #app {
+            font-family: Arial, sans-serif;
+            /*max-width: 900px;*/
+            margin: 20px auto;
+        }
+
+        .calendar {
+            display: flex;
+            gap: 4px;
+            user-select: none;
+        }
+
+        .week {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .day {
+            width: var(--day-width);
+            aspect-ratio: 1/1;
+            border-radius: 3px;
+            cursor: default;
+            transition: background-color 0.3s ease;
+            /* 默认浅灰 */
+            background-color: #ebedf0;
+            position: relative;
+        }
+
+        .day.empty {
+            background-color: transparent;
+            cursor: default;
+        }
+
+        .day.in-year:after {
+            transition: opacity 0.2s ease;
+            content: attr(data-tip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            pointer-events: none;
+            z-index: 10;
+            opacity: 0;
+        }
+
+        .day.in-year:hover::after {
+            opacity: 1;
+        }
+
+        /* 顶部月份行 */
+        .months {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
+        .month-label {
+            font-size: 12px;
+            color: #555;
+            text-align: center;
+            user-select: none;
+            line-height: 14px;
+            /* 宽度与日格宽度加间隙对应 */
+            display: inline-block;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+            gap: 4px;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            background-color: #ebedf0;
+            border: 1px solid #ddd;
+        }
+
+    </style>
 </head>
 <body>
 
@@ -51,7 +143,7 @@ date: 2025-05-08T12:00:00+08:00
     const SubmitCalender = {
         props: ['endDate', 'startDate', 'dayWidth', 'gap'],
         setup(props) {
-            const dayWidth = Number(props.dayWidth || 30);
+            const dayWidth = Number(props.dayWidth || 15);
             const gap = Number(props.gap || 4);
 
             // 结束日期是今天
@@ -244,10 +336,11 @@ date: 2025-05-08T12:00:00+08:00
 </body>
 </html>
 
+
 ```
 
 ## 预览效果
 
 <div style="width: 100%">
-    <iframe src="/template/Github-Calander.html" style="width: 100%; border: 0"></iframe>
+    <iframe src="/template/Github-Calander.html" style="width: 100%; border: 500px"></iframe>
 </div>
