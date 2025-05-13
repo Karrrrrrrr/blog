@@ -246,7 +246,7 @@ date: 2025-05-08T12:00:00+08:00
 
 ```
 
-## 效果
+## 预览效果
 
 <div style="width: 100%">
     <iframe src="/template/Github-Calander.html" style="width: 100%; border: 0"></iframe>
