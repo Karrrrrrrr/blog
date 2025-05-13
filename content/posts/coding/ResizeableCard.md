@@ -5,6 +5,7 @@ date: 2025-05-04T18:00:00+08:00
 # ResizeableCard
 灵感来自 <a href="https://chat-preview.lobehub.com/chat">lobehub</a>
 ![img.png](/template/img/resizeable.png)
+图中红色部分边框是可拖动的区域
 ## Vue 实现
 
 ```html
