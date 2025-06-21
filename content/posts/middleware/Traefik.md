@@ -98,3 +98,53 @@ tls:
 | 重试 (Retry)                          | 发生错误时自动重试   | 请求生命周期               |
 | 带前缀 (StripPrefix)                   | 更改请求的路径     | 路径修改器                |
 | 带前缀正则表达式 (StripPrefixRegex)         | 更改请求的路径     | 路径修改器                |
+
+
+
+## 七牛云CDN代理配置参考
+七牛没有提供cdn缓存, 可以自己通过代理+缓存来实现
+
+地址如下 ```https://cdn.staticfile.net```
+
+```yaml
+# 动态配置文件 dynamic.yml
+http:
+  routers:
+    cdn-static-router:
+      rule: "PathPrefix(`/cdn`)"
+      service: qiniu-cdn-service
+      middlewares:
+        - cache-header
+        - qiniu-cdn-replace-path
+
+  services:
+    qiniu-cdn-service:
+      loadBalancer:
+        servers:
+          - url: "https://cdn.staticfile.net"
+        # 必须有这行, 不然会403
+        passHostHeader: false
+
+  middlewares:
+    cache-header:
+      headers:
+        customResponseHeaders:
+          Expires: ""
+          Pragma: ""
+          Cache-Control: "public, max-age=31536000, immutable"  # cache for 1 year
+
+    qiniu-cdn-replace-path:
+      replacePathRegex:
+        regex: "^/cdn/(.*)"
+        replacement: "/$1"
+
+    strip-forwarded-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-For: ""       # 清空 X-Forwarded-For
+          X-Forwarded-Host: ""      # 清空 X-Forwarded-Host
+          X-Forwarded-Port: ""      # 清空 X-Forwarded-Port
+          X-Forwarded-Proto: ""     # 清空 X-Forwarded-Proto
+          X-Forwarded-Scheme: ""    # 清空 X-Forwarded-Scheme
+
+```
