@@ -45,8 +45,19 @@ http:
       replacepathregex:
         regex: "/v1/(.*)/"
         replacement: "/"
+
     gzip:
       compress: true
+
+    cache-header:
+      headers:
+        customResponseHeaders:
+          Cache-Control: "public, max-age=31536000, immutable"  # cache for 1 year
+
+    api-replace-path:
+      replacePathRegex:
+        regex: "^/api/(.*)"
+        replacement: "/v1/$1"  # replace prefix /api/ to /v1/
 tls:
   options:
     default:
