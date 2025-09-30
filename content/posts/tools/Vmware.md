@@ -75,7 +75,7 @@ max-lease-time -1;                    # default is 2 hours
 
 ## Ubuntu 22.04+
 对于这个版本以及以上的ubuntu, 宿主机开启tun模式会导致dns异常, 
-此时手动修改 ```/etc/systemd/resolved.conf```
+此时手动需修改 ```/etc/systemd/resolved.conf```
 
 ```
 [Resolve]
@@ -98,6 +98,9 @@ DNSStubListener=yes
 #ReadEtcHosts=yes
 #ResolveUnicastSingleLabel=no
 ```
+
+然后执行命令 ```sudo systemctl restart systemd-resolved && ping baidu.com```
+
 
 有趣的是,这个问题只在```ubuntu```出现, ```debian```, ```opensuse``` 等linux均没有这个问题
 
