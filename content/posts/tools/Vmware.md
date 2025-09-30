@@ -73,3 +73,32 @@ max-lease-time -1;                    # default is 2 hours
 
 
 
+## Ubuntu 22.04+
+对于这个版本以及以上的ubuntu, 宿主机开启tun模式会导致dns异常, 
+此时手动修改 ```/etc/systemd/resolved.conf```
+
+```
+[Resolve]
+# Some examples of DNS servers which may be used for DNS= and FallbackDNS=:
+# Cloudflare: 1.1.1.1#cloudflare-dns.com 1.0.0.1#cloudflare-dns.com 2606:4700:4700::1111#cloudflare-dns.com 2606:4700:477
+00::1001#cloudflare-dns.com
+# Google:     8.8.8.8#dns.google 8.8.4.4#dns.google 2001:4860:4860::8888#dns.google 2001:4860:4860::8844#dns.google
+# Quad9:      9.9.9.9#dns.quad9.net 149.112.112.112#dns.quad9.net 2620:fe::fe#dns.quad9.net 2620:fe::9#dns.quad9.net
+DNS=8.8.8.8
+FallbackDNS=
+Domains=
+DNSSEC=allow-downgrade  # 这行改为allow-downgrade或者no即可, 在早期版本这里默认是no, 22.04之后默认为yes
+#DNSOverTLS=no
+#MulticastDNS=no
+#LLMNR=no
+Cache=yes
+#CacheFromLocalhost=no
+DNSStubListener=yes
+#DNSStubListenerExtra=
+#ReadEtcHosts=yes
+#ResolveUnicastSingleLabel=no
+```
+
+有趣的是,这个问题只在```ubuntu```出现, ```debian```, ```opensuse``` 等linux均没有这个问题
+
+
