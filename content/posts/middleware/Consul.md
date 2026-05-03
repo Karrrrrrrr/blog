@@ -220,3 +220,58 @@ def run():
 run()
 
 ```
+
+
+```python
+import time
+from uuid import uuid4
+from signal import signal, SIGINT
+from threading import Thread
+from flask import Flask
+from consul import Consul, Check
+
+cli = Consul('172.17.0.2', port=8500)
+port = 5000
+local_host = '172.17.0.1'
+
+service_id = str(uuid4())
+app = Flask('')
+cli.agent.service.register(
+    name='hello-world2',
+    service_id=f'{service_id}',
+    address=local_host,
+    port=5000,
+    tags=['name:zhangsan'],
+    check={
+        'ttl': '10s',
+        # 'http': 'http://172.17.0.1:5000/check',
+        # 'interval': '5s',
+        'DeregisterCriticalServiceAfter': '1m'  # 这个至少1分钟， 低于一分钟无效
+    },
+
+)
+
+
+def consul_healthy_check():
+    while 1:
+        cli.agent.check.ttl_pass(f'service:{service_id}')
+        time.sleep(5)
+
+# 关闭服务取消注册
+def close(*args):
+    cli.agent.service.deregister(service_id)
+    exit(0)
+
+# 如果设置check模式为http， 就需要这个
+# @app.route('/check')
+# def check():
+#     return {}
+
+
+t = Thread(target=consul_healthy_check, daemon=True)
+t.start()
+
+signal(SIGINT, close)
+app.run(host='0.0.0.0', port=port)
+
+```

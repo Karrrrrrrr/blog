@@ -45,9 +45,9 @@ def get_stream(url):
     # with s.get(url, headers=None, stream=True) as resp:
     resp = requests.get(url, stream=1)
     # resp.iter_lines()
-    x = 1 << 8
+    chunk_size = 1 << 8
     # 每次读取x个字节
-    for chunk in resp.iter_content(x):
+    for chunk in resp.iter_content(chunk_size):
         if chunk:
             print(chunk)
     resp.close()

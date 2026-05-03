@@ -271,3 +271,121 @@ public:
 };
 
 ```
+
+
+
+### 区间最值线段树
+```c++
+
+// 区间最值线段树
+template<typename T, typename CMP>
+class RmqSegTree {
+private:
+    CMP cmp;
+
+    class Node {
+    public:
+        int l = 0;
+        int r = 0;
+        T val = 0;
+    };
+
+    void _update(int id, int l, int r, T x) {
+        if (nodes[id].l > r || nodes[id].r < l) return;
+
+        if (nodes[id].l >= l && nodes[id].r <= r) {
+            nodes[id].val = x;
+            return;
+        }
+
+        _update(id << 1, l, r, x);
+        _update(id << 1 | 1, l, r, x);
+        pushUp(id);
+    }
+
+    ll _query(int id, int l, int r) {
+        if (nodes[id].l > r || nodes[id].r < l) return 0;
+        if (nodes[id].l >= l && nodes[id].r <= r) {
+            return nodes[id].val;
+        }
+        return cmp(_query(id << 1, l, r), _query(id << 1 | 1, l, r));
+    }
+
+    void pushUp(int id) {
+        nodes[id].val = cmp(nodes[id << 1].val, nodes[id << 1 | 1].val);
+    }
+
+
+public:
+    vector<Node> nodes;
+
+    // 初始化线段树长度, 如果需要初始化值, 那么调用带参build, 不然调用无参build
+    RmqSegTree(int n) {
+        nodes.resize(n << 2);
+    }
+
+    // 允许传入一个vector
+    void build(int id, int l, int r, vector<T> &data) {
+        nodes[id].l = l;
+        nodes[id].r = r;
+
+        if (l == r) {
+            nodes[id].val = data[l];
+            return;
+        }
+        int mid = (l + r) >> 1;
+        build(id << 1, l, mid, data);
+        build(id << 1 | 1, mid + 1, r, data);
+        pushUp(id);
+    }
+
+    // 允许传入一个C数组
+    void build(int id, int l, int r, T *&data) {
+        nodes[id].l = l;
+        nodes[id].r = r;
+
+        if (l == r) {
+            nodes[id].val = data[l];
+            return;
+        }
+        int mid = (l + r) >> 1;
+        build(id << 1, l, mid, data);
+        build(id << 1 | 1, mid + 1, r, data);
+        pushUp(id);
+    }
+
+
+    void build(int id, int l, int r) {
+        nodes[id].l = l;
+        nodes[id].r = r;
+        nodes[id].val = 0;
+
+        if (l == r) {
+            return;
+        }
+        int mid = (l + r) >> 1;
+        build(id << 1, l, mid);
+        build(id << 1 | 1, mid + 1, r);
+    }
+
+    void update(int left, int right, T x) {
+        _update(1, left, right, x);
+
+    }
+
+    T query(int left, int right) {
+        return _query(1, left, right);
+    }
+};
+
+const int N = 2e6 + 10;
+
+struct CMP {
+public:
+    auto operator()(auto x, auto y) {
+        return max(x, y);
+    }
+};
+
+RmqSegTree<int, CMP> tree(N);
+```

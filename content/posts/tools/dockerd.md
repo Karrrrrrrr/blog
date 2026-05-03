@@ -5,6 +5,24 @@ categories: ["工具"]
 tags: ["Docker"]
 ---
 
+## Docker Proxy
+
+``` ~/.docker/config.json```
+
+```json
+{
+        "proxies": {
+                "default": {
+                        "httpProxy": "http://192.168.88.1:8889",
+                        "httpsProxy": "http://192.168.88.1:8889",
+                        "noProxy": "127.0.0.0/8"
+                }
+        }
+}
+```
+注意 这里的proxies会导致创建后的容器有这几个HTTP_PROXY, HTTPS_PROXY, http_proxy, https_proxy环境变量, 如果不需要的需要手动指定环境变量覆盖这四个, 重启是无效的, 只能重建容器
+
+
 ## Docker Pull 使用代理
 
 如果是常见的镜像，国内厂商里都有缓存， 只需要换源即可
@@ -19,7 +37,7 @@ tags: ["Docker"]
     "https://docker.mirrors.ustc.edu.cn/",
     "https://eut3i7o2.mirror.aliyuncs.com",
     "https://reg-mirror.qiniu.com"
-  ]
+  ],
 }
 ```
 
