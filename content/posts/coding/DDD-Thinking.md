@@ -477,6 +477,171 @@ DDD 更适合：
 
 ---
 
+# Kratos Layout 怎样体现 DDD 思想
+
+Kratos 默认 Layout 参考了 DDD 和 Clean Architecture，但它没有强制项目必须照搬模板。
+
+它提供的是一条清晰的依赖方向：
+
+```text
+api DTO
+   ↓
+service
+   ↓
+biz ← data
+```
+
+- `api` 保存对外契约和生成代码
+- `service` 把 DTO 转换为业务输入
+- `biz` 拥有领域对象、用例和 Repo 接口
+- `data` 实现 Repo，并处理数据库、缓存等基础设施
+
+最重要的一点是：
+
+> **Repo 接口由 Biz 定义，而不是由 Data 要求 Biz 使用。**
+
+这就是依赖反转。
+
+业务层描述自己需要什么能力，数据层去适配这种能力。
+
+---
+
+# 把不变量写进 Biz
+
+例如订单对象可以保护自己的取消规则：
+
+```go
+// internal/biz/order.go
+package biz
+
+import "github.com/go-kratos/kratos/v3/errors"
+
+type Order struct {
+	ID      int64
+	Status  string
+	Version int64
+}
+
+func (o *Order) Cancel() error {
+	if o.Status != "pending_payment" && o.Status != "paid" {
+		return errors.Conflict(
+			"ORDER_STATE_CONFLICT",
+			"current order state does not allow cancellation",
+		)
+	}
+	o.Status = "cancelled"
+	o.Version++
+	return nil
+}
+```
+
+这个对象不包含 Proto 字段，也不包含 GORM Tag。
+
+它只表达业务身份、状态和行为。
+
+这样无论取消操作来自 HTTP、gRPC、MQ 还是定时任务，都无法绕过同一条规则。
+
+---
+
+# Usecase 负责组织一次业务流程
+
+Biz 中的 Usecase 加载聚合、执行行为并保存结果：
+
+```go
+// internal/biz/order.go
+package biz
+
+import "context"
+
+type OrderRepo interface {
+	FindByID(context.Context, int64) (*Order, error)
+	Save(context.Context, *Order, int64) error
+}
+
+type OrderUsecase struct {
+	repo OrderRepo
+}
+
+func (uc *OrderUsecase) Cancel(
+	ctx context.Context,
+	id int64,
+) (*Order, error) {
+	order, err := uc.repo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	oldVersion := order.Version
+	if err := order.Cancel(); err != nil {
+		return nil, err
+	}
+	if err := uc.repo.Save(ctx, order, oldVersion); err != nil {
+		return nil, err
+	}
+	return order, nil
+}
+```
+
+`Save` 接收旧版本，是为了让 `data` 层使用乐观锁发现并发修改。
+
+业务层决定为什么要检查版本。
+
+数据层决定怎样用 SQL 实现。
+
+---
+
+# Data 只实现存储能力
+
+`internal/data` 实现 Biz 定义的接口：
+
+```go
+// internal/data/order.go
+package data
+
+type orderRepo struct {
+	db *sql.DB
+}
+
+var _ biz.OrderRepo = (*orderRepo)(nil)
+
+func (r *orderRepo) Save(
+	ctx context.Context,
+	order *biz.Order,
+	oldVersion int64,
+) error {
+	result, err := r.db.ExecContext(ctx, `
+		UPDATE orders
+		SET status = ?, version = ?
+		WHERE id = ? AND version = ?`,
+		order.Status, order.Version, order.ID, oldVersion,
+	)
+	if err != nil {
+		return mapDataError(err)
+	}
+
+	n, err := result.RowsAffected()
+	if err != nil {
+		return mapDataError(err)
+	}
+	if n == 0 {
+		return biz.ErrOrderConcurrentUpdate
+	}
+	return nil
+}
+```
+
+数据库驱动错误应该在 `data` 边界转换。
+
+`service` 和 `biz` 不应该通过匹配 MySQL 或 PostgreSQL 的错误文本决定业务流程。
+
+Kratos 的分层价值也正在这里：
+
+> **框架负责提供边界，业务代码负责让这些边界拥有真实含义。**
+
+> 以下示例采用 Kratos v3 导入路径，并省略了构造函数、Wire ProviderSet 和部分错误定义。
+
+---
+
 # 小结
 
 DDD 不是一套固定目录。

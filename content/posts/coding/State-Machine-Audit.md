@@ -412,6 +412,364 @@ paid_and_notified_inventory_failed
 
 ---
 
+# Context 连接一次完整的 Kratos 调用
+
+Kratos 生成的 Service 方法会接收一个 `context.Context`。
+
+这个 Context 应该沿着整条调用链继续向下传递：
+
+```text
+Middleware
+   ↓
+Service
+   ↓
+Biz Usecase
+   ↓
+Data Repo
+   ↓
+数据库和下游 RPC
+```
+
+Context 主要携带三类信息：
+
+- Deadline：这次调用最晚什么时候结束
+- Cancellation：调用方已经放弃时，通知下游停止工作
+- Request-scoped Value：只属于这一次调用的上下文值
+
+例如 Service 不应该重新创建一个 `context.Background()`：
+
+```go
+func (s *OrderService) ShipOrder(
+	ctx context.Context,
+	req *v1.ShipOrderRequest,
+) (*emptypb.Empty, error) {
+	if err := s.uc.Ship(ctx, req.Id, req.OperatorId); err != nil {
+		return nil, err
+	}
+	return &emptypb.Empty{}, nil
+}
+```
+
+继续传递原来的 `ctx`，数据库才能感知接口超时和客户端取消。
+
+如果中途换成 `context.Background()`，上游取消以后，下面的 SQL 仍然可能继续执行。
+
+---
+
+# Context 不是一个通用参数 Map
+
+Context Value 适合传递一次请求范围内、跨越多层调用的附加状态。
+
+例如：
+
+- Trace 信息
+- 当前调用身份
+- 事务句柄
+
+普通业务参数仍然应该明确写进函数签名：
+
+```go
+Ship(ctx context.Context, orderID, operatorID int64) error
+```
+
+不应该全部藏进 Context：
+
+```go
+// 不推荐：调用方无法从签名知道需要哪些业务参数
+Ship(ctx context.Context) error
+```
+
+使用 Context 时还应该遵守：
+
+- 作为函数第一个参数传入
+- 不传 `nil`
+- 通常不要长期保存在 Struct 中
+- 使用私有类型作为 Value Key，避免不同包发生冲突
+- 派生了 Timeout 或 Cancel Context 后及时调用 `cancel`
+
+Context 描述的是一次操作的生命周期。
+
+它不应该变成隐藏依赖的容器。
+
+---
+
+# 事务边界应该由 Biz 决定
+
+状态更新和审计记录为什么必须在同一个事务里？
+
+因为业务规定：
+
+> **订单状态发生变化时，必须同时留下状态历史。**
+
+这是业务规则，所以应该由 Biz 用例决定事务范围。
+
+Data 负责实现事务机制，但不应该擅自决定一个 Repo 方法和哪些其他操作共同提交。
+
+Biz 可以定义自己需要的事务能力：
+
+```go
+// internal/biz/order.go
+package biz
+
+import (
+	"context"
+
+	"github.com/go-kratos/kratos/v3/errors"
+)
+
+type Transaction interface {
+	InTx(context.Context, func(context.Context) error) error
+}
+
+type OrderStatus string
+
+const (
+	OrderPaid    OrderStatus = "paid"
+	OrderShipped OrderStatus = "shipped"
+)
+
+type OrderTransition struct {
+	OrderID int64
+	From    OrderStatus
+	To      OrderStatus
+	ActorID int64
+	Reason  string
+}
+
+type OrderRepo interface {
+	Transit(context.Context, OrderTransition) error
+}
+
+type OrderHistoryRepo interface {
+	CreateHistory(context.Context, OrderTransition) error
+}
+
+var ErrOrderStateConflict = errors.Conflict(
+	"ORDER_STATE_CONFLICT",
+	"order state has changed",
+)
+```
+
+这个 `Transaction` 接口定义在 Biz。
+
+因为 Biz 是事务能力的使用方。
+
+它只要求“在同一个事务里执行这组业务操作”，并不知道底层使用 `sql.Tx`、GORM 还是其他实现。
+
+---
+
+# Biz 操作开启事务
+
+`Ship` 用例把状态更新和审计记录放进同一个事务回调：
+
+```go
+// internal/biz/order.go
+package biz
+
+type OrderUsecase struct {
+	tx      Transaction
+	orders  OrderRepo
+	history OrderHistoryRepo
+}
+
+func (uc *OrderUsecase) Ship(
+	ctx context.Context,
+	orderID int64,
+	operatorID int64,
+) error {
+	transition := OrderTransition{
+		OrderID: orderID,
+		From:    OrderPaid,
+		To:      OrderShipped,
+		ActorID: operatorID,
+		Reason:  "merchant_shipped",
+	}
+
+	return uc.tx.InTx(ctx, func(ctx context.Context) error {
+		if err := uc.orders.Transit(ctx, transition); err != nil {
+			return err
+		}
+		return uc.history.CreateHistory(ctx, transition)
+	})
+}
+```
+
+这里的事务边界就是一个完整 Biz 操作：
+
+```text
+发货 = 修改订单状态 + 写入审计历史
+```
+
+任何一步失败，整个业务操作都回滚。
+
+Repo 不再各自开启事务。
+
+否则两个 Repo 可能分别提交，仍然无法保证业务原子性。
+
+---
+
+# Data 实现事务并通过 Context 传递
+
+`internal/data` 负责把 Biz 的 `InTx` 翻译成 `database/sql` 事务：
+
+```go
+// internal/data/transaction.go
+package data
+
+import (
+	"context"
+	"database/sql"
+)
+
+type txKey struct{}
+
+type DBTX interface {
+	ExecContext(context.Context, string, ...any) (sql.Result, error)
+}
+
+func txFromContext(ctx context.Context) (*sql.Tx, bool) {
+	tx, ok := ctx.Value(txKey{}).(*sql.Tx)
+	return tx, ok
+}
+
+func (d *Data) InTx(
+	ctx context.Context,
+	fn func(context.Context) error,
+) error {
+	// 嵌套调用复用当前事务，这里不提供 Savepoint 语义。
+	if _, ok := txFromContext(ctx); ok {
+		return fn(ctx)
+	}
+
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return mapDataError(err)
+	}
+	defer tx.Rollback()
+
+	txCtx := context.WithValue(ctx, txKey{}, tx)
+	if err := fn(txCtx); err != nil {
+		return err
+	}
+	if err := tx.Commit(); err != nil {
+		return mapDataError(err)
+	}
+	return nil
+}
+
+func (d *Data) DB(ctx context.Context) DBTX {
+	if tx, ok := txFromContext(ctx); ok {
+		return tx
+	}
+	return d.db
+}
+```
+
+`txKey` 是 Data 包的私有类型。
+
+Biz 只负责把派生后的 Context 继续传给 Repo，无法直接操作 `*sql.Tx`。
+
+这样既保持了依赖方向，也让同一业务操作中的多个 Repo 自动使用同一个事务。
+
+---
+
+# Repo 从 Context 选择 DB 或 Tx
+
+订单 Repo 不再调用 `BeginTx`。
+
+它只从 Data 取得当前 Context 对应的执行器：
+
+```go
+// internal/data/order.go
+package data
+
+func (r *orderRepo) Transit(
+	ctx context.Context,
+	t biz.OrderTransition,
+) error {
+	result, err := r.data.DB(ctx).ExecContext(ctx, `
+		UPDATE orders
+		SET status = ?, version = version + 1
+		WHERE id = ? AND status = ?`,
+		t.To, t.OrderID, t.From,
+	)
+	if err != nil {
+		return mapDataError(err)
+	}
+
+	n, err := result.RowsAffected()
+	if err != nil {
+		return mapDataError(err)
+	}
+	if n != 1 {
+		return biz.ErrOrderStateConflict
+	}
+	return nil
+}
+```
+
+审计 Repo 使用同样的方式：
+
+```go
+func (r *orderHistoryRepo) CreateHistory(
+	ctx context.Context,
+	t biz.OrderTransition,
+) error {
+	_, err := r.data.DB(ctx).ExecContext(ctx, `
+		INSERT INTO order_state_history
+		(order_id, from_status, to_status, actor_id, reason)
+		VALUES (?, ?, ?, ?, ?)`,
+		t.OrderID, t.From, t.To, t.ActorID, t.Reason,
+	)
+	if err != nil {
+		return mapDataError(err)
+	}
+	return nil
+}
+```
+
+在 `InTx` 回调内，`DB(ctx)` 返回同一个 `*sql.Tx`。
+
+在普通调用中，它返回连接池 `*sql.DB`。
+
+Repo 不需要知道当前是否处于事务中，也不会意外绕过 Biz 定义的事务边界。
+
+---
+
+# Context 还能传递取消和超时
+
+事务 Context 不只携带 `*sql.Tx`。
+
+它仍然继承原始请求的 Deadline 和 Cancellation。
+
+如果 Kratos 上游请求已经超时：
+
+- `ctx.Done()` 会被关闭
+- `ExecContext` 会把取消信号传给支持 Context 的数据库驱动
+- `InTx` 返回错误
+- 延迟执行的 `Rollback` 释放事务资源
+
+具体 SQL 能否立即停止取决于数据库和驱动实现。
+
+因此不要为了开启事务创建一个新的 `context.Background()`。
+
+应该始终从当前业务 Context 派生事务 Context。
+
+同时也不要把事务 Context 保存下来，在请求结束后继续使用。
+
+它只属于当前这一次 Biz 操作。
+
+这里体现了 Kratos 分层的责任：
+
+- Service 传递请求 Context，不重新创建调用生命周期
+- Biz 定义完整业务操作和事务边界
+- Data 实现 `InTx`，并把具体事务绑定到派生 Context
+- Repo 使用 Context 中的事务执行 SQL
+
+> 代码采用 `database/sql` 展示核心思路。使用 GORM、Ent 等组件时实现方式不同，但事务边界仍然应该由 Biz 用例决定。
+
+---
+
 # 小结
 
 多个布尔值看起来简单，却会产生大量非法组合。

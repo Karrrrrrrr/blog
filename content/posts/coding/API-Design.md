@@ -463,6 +463,130 @@ POST /operate
 
 ---
 
+# Kratos 的 API-first 思想
+
+Kratos 倾向于先使用 Protobuf 定义接口契约，再生成 HTTP 和 gRPC 代码。
+
+同一个业务方法只维护一份 IDL：
+
+```proto
+syntax = "proto3";
+
+package order.v1;
+
+import "google/api/annotations.proto";
+
+service OrderService {
+  rpc CancelOrder (CancelOrderRequest) returns (OrderReply) {
+    option (google.api.http) = {
+      post: "/v1/orders/{id}:cancel"
+      body: "*"
+    };
+  }
+}
+
+message CancelOrderRequest {
+  int64 id = 1;
+  string request_id = 2;
+  string reason = 3;
+}
+
+message OrderReply {
+  int64 id = 1;
+  string status = 2;
+}
+```
+
+这里的重点不是 Protobuf 语法。
+
+而是 API 契约独立存在于 `api` 目录，由生成代码统一 HTTP 和 gRPC 行为。
+
+不要先手写一套 HTTP Handler，再单独维护另一套 gRPC 接口。
+
+---
+
+# Service 层应该保持薄
+
+Kratos Layout 中的 `internal/service` 是传输适配层。
+
+它负责：
+
+- 接收生成的 DTO
+- 完成必要的格式转换
+- 调用 Biz 用例
+- 返回 API DTO
+
+例如：
+
+```go
+// internal/service/order.go
+package service
+
+func (s *OrderService) CancelOrder(
+	ctx context.Context,
+	req *v1.CancelOrderRequest,
+) (*v1.OrderReply, error) {
+	order, err := s.uc.Cancel(ctx, biz.CancelOrderCommand{
+		OrderID:   req.Id,
+		RequestID: req.RequestId,
+		Reason:    req.Reason,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &v1.OrderReply{
+		Id:     order.ID,
+		Status: order.Status,
+	}, nil
+}
+```
+
+“当前订单能不能取消”不应该写在这里。
+
+因为同一个用例以后还可能被 MQ 消费者或定时任务调用。
+
+Service 只负责协议边界，业务规则留在 `biz`。
+
+---
+
+# 使用 Kratos Error 表达稳定语义
+
+Kratos Error 包含四类信息：
+
+- `code`：大类语义，可以映射 HTTP 和 gRPC 状态
+- `reason`：服务内稳定的错误原因
+- `message`：给人阅读的提示
+- `metadata`：可扩展的附加信息
+
+Biz 可以返回明确错误：
+
+```go
+package biz
+
+import "github.com/go-kratos/kratos/v3/errors"
+
+func orderStateConflict(status string) error {
+	return errors.Conflict(
+		"ORDER_STATE_CONFLICT",
+		"current order state does not allow cancellation",
+	).WithMetadata(map[string]string{
+		"current_status": status,
+	})
+}
+```
+
+调用方应该根据 `code` 和 `reason` 决定行为。
+
+不要匹配 `message` 文案判断是否重试。
+
+同时也不要把所有业务拒绝都包装成 500。
+
+错误语义正确以后，Kratos 的网关、中间件、指标和 Trace 才能正确区分业务失败与系统故障。
+
+> 以下代码示例使用 Kratos v3；v2 项目需要把导入路径中的 `/v3` 替换为 `/v2`，并根据实际版本重新生成接口代码。
+
+---
+
 # 小结
 
 接口设计不只是定义路径和 JSON。

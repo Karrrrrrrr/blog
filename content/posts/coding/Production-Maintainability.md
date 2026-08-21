@@ -161,6 +161,20 @@ Trace 定位问题发生在哪一段
 
 即使最外层接口最终返回成功，链路中间仍然留下了异常节点。
 
+以 Kratos v3 的默认 Middleware 为例，只要 Handler 最终返回的 `error` 不是 `nil`：
+
+- Logging Middleware 会按 Error 级别记录请求
+- Tracing Middleware 会调用 `RecordError`
+- Server Span 会被标记为 Error
+
+Kratos Error 的 Code 和 Reason 可以保留业务语义，但 `Conflict`、`BadRequest` 仍然是非 `nil` Error，不会自动变成成功 Span。
+
+如果 Biz 已经识别并处理了某个分支，最终返回 `nil`，Server Middleware 不会再把请求标记为失败。
+
+但这不代表整条链路一定干净。
+
+数据库或 RPC Client 的子 Span 可能已经在唯一键冲突发生时记录 Error，上层不能撤销已经完成的子 Span。
+
 如果大量正常重试都走这条路径，真正的错误会被淹没。
 
 因此可观测性也会影响代码流程设计。
@@ -175,6 +189,8 @@ Trace 定位问题发生在哪一段
 唯一约束仍然负责并发兜底。
 
 先查询则让普通重复请求不产生预期错误，保持 Trace 干净。
+
+真正并发竞争产生的唯一键冲突仍然保留为异常信号，因为它确实表示查询和创建之间发生了状态变化。
 
 ---
 

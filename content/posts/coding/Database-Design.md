@@ -442,6 +442,142 @@ user_id, status, created_at
 
 ---
 
+# 在 Kratos 中怎样放置数据库设计
+
+Kratos 的设计哲学更接近一个微服务工具箱。
+
+它不会规定必须使用 GORM、Ent 还是 `database/sql`。
+
+默认 Layout 更关注依赖方向：
+
+```text
+service → biz ← data
+```
+
+- `service` 负责 API DTO 和业务对象之间的转换
+- `biz` 定义领域对象和 Repo 接口
+- `data` 实现 Repo，并决定表结构、SQL、索引和缓存
+
+也就是说，业务层应该表达“需要什么数据”。
+
+数据层负责决定“怎样高效地取出来”。
+
+---
+
+# 订单快照应该进入 Biz 模型
+
+订单里的商品名称和成交价格不是临时查询字段。
+
+它们是下单时形成的历史事实。
+
+因此可以直接出现在 `internal/biz` 的订单模型中：
+
+```go
+// internal/biz/order.go
+package biz
+
+type OrderItem struct {
+	ProductID          int64
+	ProductNameSnapshot string
+	DealPriceCent      int64
+	Quantity           int32
+}
+
+type Order struct {
+	ID     int64
+	UserID int64
+	Items  []OrderItem
+}
+```
+
+这里没有 ORM Tag，也没有 Proto 类型。
+
+因为 `OrderItem` 表达的是业务对象，不是数据库怎样保存它。
+
+`data` 层可以把它转换成自己的持久化模型：
+
+```go
+// internal/data/order.go
+package data
+
+type orderItemPO struct {
+	ID                  int64  `db:"id"`
+	OrderID             int64  `db:"order_id"`
+	ProductID           int64  `db:"product_id"`
+	ProductNameSnapshot string `db:"product_name_snapshot"`
+	DealPriceCent       int64  `db:"deal_price_cent"`
+	Quantity            int32  `db:"quantity"`
+}
+```
+
+PO 跟随数据库结构变化。
+
+DO 跟随业务含义变化。
+
+两者分开以后，增加索引或者更换 ORM 不需要污染业务模型。
+
+---
+
+# Repo 接口应该表达查询意图
+
+Kratos Layout 把 Repo 接口定义在 `biz`，由 `data` 反向实现。
+
+例如订单业务真正需要的是：
+
+```go
+// internal/biz/order.go
+package biz
+
+import "context"
+
+type OrderRepo interface {
+	Create(context.Context, *Order) error
+	FindByID(context.Context, int64) (*Order, error)
+	ListByUser(context.Context, int64, ListOrderQuery) ([]*Order, error)
+}
+
+type ListOrderQuery struct {
+	Status string
+	Limit  int
+	Cursor int64
+}
+```
+
+不要为了“通用”把 SQL 细节直接暴露给 `biz`：
+
+```go
+// 不推荐：业务层开始依赖存储表达式
+Find(where string, args ...any)
+```
+
+联合索引怎样设计，应该由 `data` 根据查询语义决定。
+
+例如 `ListByUser` 最终使用：
+
+```sql
+SELECT id, user_id, status, created_at
+FROM orders
+WHERE user_id = ?
+  AND status = ?
+  AND id < ?
+ORDER BY id DESC
+LIMIT ?;
+```
+
+那么 `data` 层可以结合实际数据分布评估：
+
+```text
+(user_id, status, id)
+```
+
+这样的联合索引。
+
+Repo 隔离的是存储实现。
+
+它不应该让业务层假装数据库查询不存在成本。
+
+---
+
 # 小结
 
 范式设计的核心是：

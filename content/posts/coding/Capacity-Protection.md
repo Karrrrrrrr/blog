@@ -434,6 +434,174 @@ date: 2026-08-21T11:50:00+08:00
 
 ---
 
+# Kratos 把治理能力放在 Middleware
+
+Kratos 提供服务端限流和客户端熔断 Middleware。
+
+两者所在方向不同：
+
+```text
+调用方
+  ↓ 客户端熔断：下游明显故障时停止浪费调用
+服务端
+  ↓ 服务端限流：超过本服务容量时拒绝部分请求
+业务处理
+```
+
+服务端限流可以在 Server 构造时统一注册：
+
+```go
+import (
+	"github.com/go-kratos/kratos/contrib/otel/v3/tracing"
+	"github.com/go-kratos/kratos/v3/middleware/ratelimit"
+	"github.com/go-kratos/kratos/v3/middleware/recovery"
+	"github.com/go-kratos/kratos/v3/transport/http"
+)
+
+srv := http.NewServer(
+	http.Address(":8000"),
+	http.Middleware(
+		tracing.Server(),
+		recovery.Recovery(),
+		ratelimit.Server(),
+	),
+)
+```
+
+这里把 Trace 放在 Recovery 外层，让业务 Panic 被恢复成 Error 后，Trace 仍然能够记录失败状态。
+
+限流发生在业务处理之前，可以避免请求已经占用大量数据库和下游资源以后才失败。
+
+但框架默认能力只是起点。
+
+按用户、租户、接口成本设置配额时，仍然需要结合业务身份和自己的 Limiter 实现。
+
+---
+
+# 熔断应该配置在 Client 侧
+
+调用支付服务的 Kratos gRPC Client 可以加入熔断 Middleware：
+
+```go
+import (
+	"context"
+	"time"
+
+	paymentv1 "example/api/payment/v1"
+
+	"github.com/go-kratos/kratos/contrib/otel/v3/tracing"
+	"github.com/go-kratos/kratos/v3/middleware/circuitbreaker"
+	"github.com/go-kratos/kratos/v3/registry"
+	"github.com/go-kratos/kratos/v3/transport/grpc"
+)
+
+func NewPaymentClient(discovery registry.Discovery) (paymentv1.PaymentServiceClient, error) {
+	conn, err := grpc.NewClient(
+		context.Background(),
+		grpc.WithEndpoint("discovery:///payment"),
+		grpc.WithDiscovery(discovery),
+		grpc.WithTimeout(800*time.Millisecond),
+		grpc.WithMiddleware(
+			tracing.Client(),
+			circuitbreaker.Client(),
+		),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return paymentv1.NewPaymentServiceClient(conn), nil
+}
+```
+
+这里的 `context.Background()` 用于应用启动时创建长期 Client。
+
+它不是某一次支付请求的业务 Context。
+
+真正调用支付接口时，Repo 必须继续传递从 Biz 收到的 `ctx`：
+
+```go
+func (r *paymentRepo) Pay(
+	ctx context.Context,
+	orderID int64,
+	amount int64,
+) error {
+	_, err := r.client.Pay(ctx, &paymentv1.PayRequest{
+		OrderId: orderID,
+		Amount:  amount,
+	})
+	if err != nil {
+		return mapPaymentError(err)
+	}
+	return nil
+}
+```
+
+这样 `tracing.Client()` 才能创建当前请求的子 Span，并把 Trace Carrier 注入下游请求。
+
+上游的 Deadline 和 Cancellation 也会沿着这个 Context 传给支付服务。
+
+如果在 `Pay` 里换成新的 `context.Background()`，Client Middleware 虽然仍然会创建 Span，但它已经属于另一条链路，也不会随着原请求超时而取消。
+
+熔断器看到的是客户端调用结果。
+
+因此业务错误必须拥有正确的 Kratos Error Code。
+
+余额不足如果被错误包装成 500，熔断器可能把正常业务拒绝当成支付服务故障。
+
+错误分类、Trace 和治理策略不是互相独立的功能。
+
+它们通过同一条 Middleware 链协作。
+
+---
+
+# 降级仍然属于业务用例
+
+Kratos Middleware 可以发现错误、执行限流和熔断。
+
+但它不知道“商品推荐失败时能不能返回默认推荐”。
+
+这个决定应该留在 Biz：
+
+```go
+func (uc *ProductUsecase) Detail(
+	ctx context.Context,
+	id int64,
+) (*ProductDetail, error) {
+	product, err := uc.repo.FindByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	recommendations, err := uc.recommend.List(ctx, id)
+	if err != nil {
+		// 推荐是非核心能力，可以降级为空列表。
+		recommendations = nil
+	}
+	return &ProductDetail{
+		Product:         product,
+		Recommendations: recommendations,
+	}, nil
+}
+```
+
+账户余额、权限、支付结果这类核心数据失败时，则不应该使用相同降级方式。
+
+降级也不等于静默吞掉错误。
+
+实际项目仍然需要记录降级指标或 Trace Event，否则推荐服务长期故障也可能没有人发现。
+
+框架提供治理机制。
+
+业务层决定什么可以牺牲。
+
+这正符合 Kratos 的工具箱哲学：
+
+> **公共机制由 Middleware 统一实现，业务取舍由 Biz 明确表达。**
+
+> 示例使用 Kratos v3。v3 的默认 Circuit Breaker 不再隐式依赖 Aegis；自定义实现应通过明确的工厂或组件注入。
+
+---
+
 # 小结
 
 系统不能处理无限请求。
