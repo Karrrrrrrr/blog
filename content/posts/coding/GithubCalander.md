@@ -113,9 +113,8 @@ date: 2025-05-08T12:00:00+08:00
 </div>
 
 <!-- Vue3 + Dayjs -->
-<script src="https://lf3-cdn-tos.bytecdntp.com/cdn/expire-1-M/vue/3.2.31/vue.global.min.js"></script>
-<script src="https://lf9-cdn-tos.bytecdntp.com/cdn/expire-1-M/dayjs/1.10.8/dayjs.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.31/vue.global.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.8/dayjs.min.js"></script>
 <script>
     const {
         createApp,

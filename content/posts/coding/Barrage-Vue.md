@@ -82,7 +82,7 @@ tags: [ "Vue", "前端" ]
     <barrage-video />
 </div >
 </body >
-<script src="https://lib.baomitu.com/vue/3.0.2/vue.global.js" ></script >
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.js" ></script >
 
 <script >
     const { createApp, ref } = Vue

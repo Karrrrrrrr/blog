@@ -56,6 +56,14 @@ unpkg.com
     "https://unpkg.com/@vueuse/core", 
 ]
 ```
+
+
+cloudflare
+```ts
+[
+    "https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.41/vue.global.min.js"
+]
+```
     
 
 
