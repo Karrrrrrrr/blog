@@ -2,7 +2,7 @@
 # 站点配置
 
 baseURL = "https://hugo.single-one.top"
-title = "Karrrrr"
+title = "Karrrrrr"
 languageCode = "zh-CN"
 hasCJKLanguage = true
 # 版权信息（支持 Markdown）
@@ -98,7 +98,7 @@ uglyURLs = false
 # 作者信息
 [author]
     # 名字
-    name = "Karrrrr"
+    name = "Karrrrrr"
     # 邮箱
     email = "438577872@qq.com"
     # 座右铭或简介
